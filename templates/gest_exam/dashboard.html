@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titre %}Dashboard Examens{% endblock %}
+{% block contenu %}
+<h1 class="text-2xl font-bold mb-4">Examens & Imports</h1>
+<div class="grid md:grid-cols-3 gap-4">
+  <div class="bg-white shadow rounded p-4">
+    <div class="text-sm text-gray-500">Imports</div>
+    <div class="text-2xl font-bold">{{ stats.imports_total }}</div>
+  </div>
+  <div class="bg-white shadow rounded p-4">
+    <div class="text-sm text-gray-500">Cours</div>
+    <div class="text-2xl font-bold">{{ stats.nb_cours }}</div>
+  </div>
+  <div class="bg-white shadow rounded p-4">
+    <div class="text-sm text-gray-500">Filières</div>
+    <div class="text-2xl font-bold">{{ stats.nb_filieres }}</div>
+  </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titre %}Structures académiques{% endblock %}
+{% block contenu %}
+<h1 class="text-2xl font-bold mb-4">Filières / Salles / Cours</h1>
+<p class="text-gray-700 mb-4">Gestion des filières et capacités.</p>
+{% if filieres %}
+<div class="overflow-x-auto bg-white shadow rounded">
+  <table class="min-w-full text-sm">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-3 py-2 text-left">Nom</th>
+        <th class="px-3 py-2 text-left">Niveau</th>
+        <th class="px-3 py-2 text-left">Étudiants</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in filieres %}
+      <tr class="border-t">
+        <td class="px-3 py-2">{{ f.nom_filiere }}</td>
+        <td class="px-3 py-2">{{ f.niveau }}</td>
+        <td class="px-3 py-2">{{ f.nombre_etudiants or 0 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<p class="text-gray-500">Aucune filière pour le moment.</p>
+{% endif %}
+{% endblock %}
+

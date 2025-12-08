@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block titre %}Connexion - UIST-2ITS{% endblock %}
+
+{% block contenu %}
+<div class="max-w-md mx-auto mt-8 lg:mt-12">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 lg:p-10">
+        <div class="text-center mb-8">
+            <div class="flex justify-center mb-4">
+                <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="UIST-2ITS" class="h-16 w-auto" onerror="this.style.display='none';">
+            </div>
+            <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Connexion</h2>
+            <p class="text-gray-600 text-sm lg:text-base">Accédez à votre espace UIST-2ITS</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('auth.connexion') }}" class="space-y-6">
+            <div>
+                <label for="matricule" class="block text-sm font-medium text-gray-700 mb-2">
+                    Matricule
+                </label>
+                <input
+                    type="text"
+                    id="matricule"
+                    name="matricule"
+                    required
+                    autofocus
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent outline-none transition"
+                    placeholder="Votre matricule"
+                >
+            </div>
+
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                    Mot de passe
+                </label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent outline-none transition"
+                    placeholder="Votre mot de passe (optionnel pour test)"
+                >
+                <p class="text-xs text-gray-500 mt-1">Mot de passe par défaut: password123</p>
+            </div>
+
+            <div>
+                <p class="text-xs text-gray-500 mb-2">Comptes test disponibles (cliquez pour remplir) :</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                            <span class="font-semibold text-blue-700 block mb-1">Étudiants</span>
+                            <div class="space-y-1">
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline block" data-matricule="E2025001">E2025001</span>
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline block" data-matricule="E2025002">E2025002</span>
+                            </div>
+                        </div>
+                        <div class="bg-green-50 p-3 rounded-lg border border-green-100">
+                            <span class="font-semibold text-green-700 block mb-1">Enseignants</span>
+                            <div class="space-y-1">
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline block" data-matricule="P2025001">P2025001</span>
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline block" data-matricule="P2025002">P2025002</span>
+                            </div>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                            <span class="font-semibold text-purple-700 block mb-1">Directeur</span>
+                            <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline block" data-matricule="DIR2025001">DIR2025001</span>
+                        </div>
+                        <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100">
+                            <span class="font-semibold text-indigo-700 block mb-1">Administrateurs</span>
+                            <div class="space-y-1">
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline block" data-matricule="SA2025001">SA2025001 (Super Admin)</span>
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline block" data-matricule="A2025001">A2025001 (Admin)</span>
+                            </div>
+                        </div>
+                        <div class="bg-orange-50 p-3 rounded-lg border border-orange-100 sm:col-span-2">
+                            <span class="font-semibold text-orange-700 block mb-1">Gestionnaires & Parents</span>
+                            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 mt-1">
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline" data-matricule="GPV2025001">GPV2025001</span>
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline" data-matricule="GEX2025001">GEX2025001</span>
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline" data-matricule="GEDT2025001">GEDT2025001</span>
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline" data-matricule="GPRE2025001">GPRE2025001</span>
+                                <span class="test-account cursor-pointer text-uist-bleu hover:text-blue-700 hover:underline" data-matricule="PAR2025001">PAR2025001</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button
+                type="submit"
+                class="w-full bg-uist-bleu hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-md hover:shadow-lg"
+            >
+                Se Connecter
+            </button>
+        </form>
+
+        <script>
+        // Gestionnaire d'événements pour les comptes test
+        document.addEventListener('DOMContentLoaded', function() {
+            const testAccounts = document.querySelectorAll('.test-account');
+
+            testAccounts.forEach(account => {
+                account.addEventListener('click', function() {
+                    const matricule = this.getAttribute('data-matricule');
+                    const matriculeInput = document.getElementById('matricule');
+                    const passwordInput = document.getElementById('password');
+                    matriculeInput.value = matricule;
+                    passwordInput.value = 'password123';
+                    matriculeInput.focus();
+                });
+            });
+        });
+        </script>
+
+        </div>
+</div>
+{% endblock %}
+        <div class="mt-4 text-center">
+            <a href="/diagnostic" class="text-sm text-uist-bleu hover:underline">
+                🔍 Problème de connexion ? Utilisez la page de diagnostic
+            </a>
+        </div>

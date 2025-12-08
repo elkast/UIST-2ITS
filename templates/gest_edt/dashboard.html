@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titre %}Dashboard EDT{% endblock %}
+{% block contenu %}
+<h1 class="text-2xl font-bold mb-4">Planification</h1>
+<p class="text-gray-700 mb-4">Suivi des créneaux et filières.</p>
+<div class="grid md:grid-cols-2 gap-4">
+  <div class="bg-white shadow rounded p-4">
+    <div class="text-sm text-gray-500">Créneaux</div>
+    <div class="text-2xl font-bold">{{ stats.total_creneaux }}</div>
+  </div>
+  <div class="bg-white shadow rounded p-4">
+    <div class="text-sm text-gray-500">Filières</div>
+    <div class="text-2xl font-bold">{{ stats.total_filieres }}</div>
+  </div>
+</div>
+{% endblock %}
+

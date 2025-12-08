@@ -1,0 +1,33 @@
+<!-- Quick Actions Component -->
+<!-- Usage: {% include 'components/quick_actions.html' with actions=actions_list %} -->
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-8">
+    {% for action in actions %}
+    <a href="{{ action.url }}" 
+       class="group bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 border-l-4 {{ action.color_class }} transform hover:-translate-y-1">
+        <div class="flex items-start justify-between">
+            <div class="flex-1">
+                <div class="flex items-center mb-2">
+                    <span class="text-3xl mr-3">{{ action.icon }}</span>
+                    <h3 class="text-lg font-semibold text-gray-800 group-hover:text-uist-bleu transition">
+                        {{ action.title }}
+                    </h3>
+                </div>
+                <p class="text-sm text-gray-600 mb-3">{{ action.description }}</p>
+                {% if action.badge %}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium {{ action.badge_class }}">
+                    {{ action.badge }}
+                </span>
+                {% endif %}
+            </div>
+            {% if action.count is defined %}
+            <div class="ml-4">
+                <div class="bg-gradient-to-br from-uist-bleu to-uist-violet text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg shadow-lg">
+                    {{ action.count }}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titre %}Présences{% endblock %}
+{% block contenu %}
+<h1 class="text-2xl font-bold mb-4">Suivi des présences</h1>
+<p class="text-gray-700 mb-4">Synthèse des présences enseignants.</p>
+{% if stats_enseignants %}
+<div class="space-y-3">
+  {% for s in stats_enseignants %}
+  <div class="bg-white shadow rounded p-4">
+    <div class="font-semibold">{{ s.enseignant.prenom }} {{ s.enseignant.nom }}</div>
+    <div class="text-sm text-gray-600">Taux de présence : {{ s.taux_presence }}%</div>
+    <div class="text-sm text-gray-600">Heures prévues : {{ s.heures_prevues }} | Heures effectuées : {{ s.heures_effectuees }}</div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<p class="text-gray-500">Aucune donnée de présence.</p>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block titre %}Dashboard Gestionnaire PV{% endblock %}
+{% block contenu %}
+<h1 class="text-2xl font-bold mb-4">Bulletins</h1>
+<div class="grid md:grid-cols-3 gap-4">
+  <div class="bg-white shadow rounded p-4">
+    <div class="text-sm text-gray-500">Bulletins générés</div>
+    <div class="text-2xl font-bold">{{ stats.bulletins_generes }}</div>
+  </div>
+  <div class="bg-white shadow rounded p-4">
+    <div class="text-sm text-gray-500">Étudiants</div>
+    <div class="text-2xl font-bold">{{ stats.nb_etudiants }}</div>
+  </div>
+  <div class="bg-white shadow rounded p-4">
+    <div class="text-sm text-gray-500">Filières</div>
+    <div class="text-2xl font-bold">{{ stats.nb_filieres }}</div>
+  </div>
+</div>
+{% endblock %}
+
