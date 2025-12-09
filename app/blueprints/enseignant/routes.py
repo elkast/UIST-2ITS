@@ -117,7 +117,7 @@ def gestion_notes():
             cours_selectionne = next((c for c in cours_enseignes if c['id'] == cours_id), None)
             statistiques = Note.calculer_moyenne_cours(cours_id)
     
-    return render_template('enseignant/grade_entry.html',
+    return render_template('enseignant/gestion_notes.html',
                          cours_enseignes=cours_enseignes,
                          cours_selectionne=cours_selectionne,
                          notes=notes,

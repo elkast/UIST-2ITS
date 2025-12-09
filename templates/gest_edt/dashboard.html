@@ -1,17 +1,46 @@
 {% extends "base.html" %}
 {% block titre %}Dashboard EDT{% endblock %}
 {% block contenu %}
-<h1 class="text-2xl font-bold mb-4">Planification</h1>
-<p class="text-gray-700 mb-4">Suivi des créneaux et filières.</p>
-<div class="grid md:grid-cols-2 gap-4">
-  <div class="bg-white shadow rounded p-4">
-    <div class="text-sm text-gray-500">Créneaux</div>
-    <div class="text-2xl font-bold">{{ stats.total_creneaux }}</div>
-  </div>
-  <div class="bg-white shadow rounded p-4">
-    <div class="text-sm text-gray-500">Filières</div>
-    <div class="text-2xl font-bold">{{ stats.total_filieres }}</div>
-  </div>
+<div class="container-fluid py-4">
+    <h1 class="text-2xl font-bold mb-4">Gestionnaire EDT - Emplois du Temps</h1>
+    <p class="text-gray-700 mb-4">Gestion et planification des emplois du temps</p>
+    
+    <!-- Statistiques -->
+    <div class="grid md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white shadow rounded p-4 border-l-4 border-blue-500">
+            <div class="text-sm text-gray-500">Créneaux Total</div>
+            <div class="text-2xl font-bold text-blue-600">{{ stats.total_creneaux if stats else 0 }}</div>
+        </div>
+        <div class="bg-white shadow rounded p-4 border-l-4 border-red-500">
+            <div class="text-sm text-gray-500">Conflits Actifs</div>
+            <div class="text-2xl font-bold text-red-600">{{ stats.conflits_actifs if stats else 0 }}</div>
+        </div>
+    </div>
+
+    <!-- Actions Rapides -->
+    <div class="bg-white shadow rounded p-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/></svg>
+            Actions Rapides
+        </h2>
+        <div class="grid md:grid-cols-4 gap-3">
+            <a href="{{ url_for('admin.gestion_creneaux') }}" class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
+                Créer Créneaux
+            </a>
+            <a href="{{ url_for('admin.gestion_conflits') }}" class="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/></svg>
+                Vérifier Conflits
+            </a>
+            <a href="{{ url_for('edt.emplois_du_temps_filieres') }}" class="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/></svg>
+                Vue Filières
+            </a>
+            <a href="{{ url_for('admin.gestion_salles') }}" class="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                Gérer Salles
+            </a>
+        </div>
+    </div>
 </div>
 {% endblock %}
-

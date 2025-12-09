@@ -1,19 +1,54 @@
 {% extends "base.html" %}
 {% block titre %}Dashboard Parent{% endblock %}
 {% block contenu %}
-<h1 class="text-2xl font-bold mb-4">Espace Parent</h1>
-{% if enfants_stats %}
-<div class="space-y-3">
-  {% for e in enfants_stats %}
-  <div class="bg-white shadow rounded p-4">
-    <div class="font-semibold">{{ e.info.etudiant_prenom }} {{ e.info.etudiant_nom }}</div>
-    <div class="text-sm text-gray-600">Moyenne : {{ e.moyenne }}</div>
-    <div class="text-sm text-gray-600">Cours : {{ e.nb_cours }}</div>
-  </div>
-  {% endfor %}
-  {% else %}
-  <p class="text-gray-500">Aucun enfant lié.</p>
-  {% endif %}
+<div class="container-fluid py-4">
+    <h1 class="text-2xl font-bold mb-4">Espace Parent</h1>
+    <p class="text-gray-700 mb-4">Suivi de vos enfants</p>
+
+    <!-- Actions Rapides -->
+    <div class="bg-white shadow rounded p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/></svg>
+            Actions Rapides
+        </h2>
+        <div class="grid md:grid-cols-4 gap-3">
+            <a href="{{ url_for('parent.emploi_du_temps_enfant') }}" class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
+                EDT Enfant
+            </a>
+            <a href="{{ url_for('parent.notes_enfant') }}" class="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                Notes Enfant
+            </a>
+            <a href="{{ url_for('parent.child_view') }}" class="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg>
+                Bulletins
+            </a>
+            <a href="{{ url_for('parent.tableau_bord') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"/></svg>
+                Évolution
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques Enfants -->
+    {% if enfants_stats %}
+    <div class="bg-white shadow rounded p-6">
+        <h2 class="text-lg font-bold mb-4">Suivi de vos Enfants</h2>
+        <div class="space-y-3">
+            {% for e in enfants_stats %}
+            <div class="bg-white shadow rounded p-4 border-l-4 border-blue-500">
+                <div class="font-semibold">{{ e.info.etudiant_prenom }} {{ e.info.etudiant_nom }}</div>
+                <div class="text-sm text-gray-600">Moyenne : {{ e.moyenne }}</div>
+                <div class="text-sm text-gray-600">Nombre de cours : {{ e.nb_cours }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white shadow rounded p-6 text-center">
+        <p class="text-gray-500">Aucun enfant lié à votre compte.</p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
-

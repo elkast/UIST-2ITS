@@ -76,17 +76,24 @@ Ouvrir le navigateur : `http://localhost:5000`
 
 ## 👥 Comptes de Test
 
-| Rôle | Matricule | Mot de passe | Email |
-|------|-----------|--------------|-------|
-| **Super Admin** | SA2025001 | password123 | superadmin@uist.edu |
-| **Admin** | A2025001 | password123 | admin@uist.edu |
-| **Directeur** | DIR2025001 | password123 | directeur@uist.edu |
-| **Gestionnaire PV** | GPV2025001 | password123 | gpv@uist.edu |
-| **Gestionnaire Examens** | GEX2025001 | password123 | gexamens@uist.edu |
-| **Gestionnaire EDT** | GEDT2025001 | password123 | gedt@uist.edu |
-| **Enseignant** | P2025001 | password123 | enseignant@uist.edu |
-| **Étudiant** | E2025001 | password123 | etudiant@uist.edu |
-| **Parent** | PAR2025001 | password123 | parent@uist.edu |
+**Tous les mots de passe:** `password123`
+
+| Rôle | Matricule | Email | Accès |
+|------|-----------|-------|-------|
+| **Super Admin** | SA2025001 | superadmin@uist.edu | Accès complet système |
+| **Admin** | A2025001 | admin@uist.edu | Administration générale |
+| **Directeur** | DIR2025001 | directeur@uist.edu | Gestion utilisateurs, validation notes, assignations |
+| **Gest. PV** | GPV2025001 | gpv@uist.edu | Génération bulletins, notes validées |
+| **Gest. Examens** | GEX2025001 | gexamens@uist.edu | Import notes, programmation examens |
+| **Gest. EDT** | GEDT2025001 | gedt@uist.edu | Gestion emplois du temps |
+| **Enseignant** | P2025001 | enseignant@uist.edu | Saisie notes, disponibilités |
+| **Étudiant** | E2025001 | etudiant@uist.edu | Consultation notes validées |
+| **Parent** | PAR2025001 | parent@uist.edu | Suivi enfants |
+
+**Pour créer ces comptes:**
+```bash
+mysql -u root -p UIST_2ITS < comptes_test_restructures.sql
+```
 
 ---
 

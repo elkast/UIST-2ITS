@@ -387,7 +387,14 @@ def gestion_cours():
     """
     cours = Cours.obtenir_tous()
     filieres = Filiere.obtenir_toutes()
-    return render_template('admin/gestion_cours.html', cours=cours, filieres=filieres)
+    enseignants = Enseignant.obtenir_tous()
+    salles = Salle.obtenir_toutes()
+    
+    return render_template('admin/gestion_cours.html', 
+                         cours=cours, 
+                         filieres=filieres,
+                         enseignants=enseignants,
+                         salles=salles)
 
 @admin_bp.route('/cours/ajouter', methods=['POST'])
 @role_required(['administration', 'directeur'])
@@ -463,6 +470,53 @@ def supprimer_cours(cours_id):
         flash('Cours supprimé avec succès.', 'success')
     else:
         flash('Erreur lors de la suppression du cours.', 'danger')
+    
+    return redirect(url_for('admin.gestion_cours'))
+
+@admin_bp.route('/cours/assigner-enseignant/<int:cours_id>', methods=['POST'])
+@role_required(['administration', 'directeur', 'ADMIN', 'SUPER_ADMIN'])
+def assigner_enseignant_cours(cours_id):
+    """
+    Assigner un enseignant à un cours via un créneau EDT
+    """
+    enseignant_id = request.form.get('enseignant_id', '').strip()
+    salle_id = request.form.get('salle_id', '').strip()
+    jour = request.form.get('jour', '').strip()
+    heure_debut = request.form.get('heure_debut', '').strip()
+    heure_fin = request.form.get('heure_fin', '').strip()
+    
+    # Validation
+    if not all([enseignant_id, salle_id, jour, heure_debut, heure_fin]):
+        flash('Tous les champs sont obligatoires pour assigner un enseignant.', 'danger')
+        return redirect(url_for('admin.gestion_cours'))
+    
+    try:
+        enseignant_id = int(enseignant_id)
+        salle_id = int(salle_id)
+    except ValueError:
+        flash('Données invalides.', 'danger')
+        return redirect(url_for('admin.gestion_cours'))
+    
+    # Vérifier les conflits
+    conflit = EmploiDuTemps.verifier_conflit(enseignant_id, salle_id, jour, heure_debut, heure_fin, cours_id)
+    
+    if conflit:
+        type_conflit = conflit['type']
+        if type_conflit == 'enseignant':
+            flash('Conflit : L\'enseignant a déjà un cours à cette heure.', 'danger')
+        elif type_conflit == 'salle':
+            flash('Conflit : La salle est déjà occupée à cette heure.', 'danger')
+        elif type_conflit == 'filiere':
+            flash('Conflit : La filière a déjà un cours à cette heure.', 'danger')
+        return redirect(url_for('admin.gestion_cours'))
+    
+    # Créer le créneau (assignation)
+    creneau_id = EmploiDuTemps.creer(cours_id, enseignant_id, salle_id, jour, heure_debut, heure_fin)
+    
+    if creneau_id:
+        flash('Enseignant assigné au cours avec succès.', 'success')
+    else:
+        flash('Erreur lors de l\'assignation de l\'enseignant.', 'danger')
     
     return redirect(url_for('admin.gestion_cours'))
 

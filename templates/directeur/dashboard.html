@@ -1,25 +1,121 @@
 {% extends "base.html" %}
 {% block titre %}Dashboard Directeur{% endblock %}
 {% block contenu %}
-<h1 class="text-2xl font-bold mb-4">Validation des notes</h1>
-<p class="text-gray-700 mb-4">Suivi des notes en attente et signalements.</p>
-<div class="grid md:grid-cols-4 gap-4">
-  <div class="bg-white shadow rounded p-4">
-    <div class="text-sm text-gray-500">Notes validées</div>
-    <div class="text-2xl font-bold">{{ stats.notes_validees }}</div>
-  </div>
-  <div class="bg-white shadow rounded p-4">
-    <div class="text-sm text-gray-500">Notes en attente</div>
-    <div class="text-2xl font-bold">{{ stats.notes_en_attente }}</div>
-  </div>
-  <div class="bg-white shadow rounded p-4">
-    <div class="text-sm text-gray-500">Signalements</div>
-    <div class="text-2xl font-bold">{{ stats.signalements }}</div>
-  </div>
-  <div class="bg-white shadow rounded p-4">
-    <div class="text-sm text-gray-500">Étudiants</div>
-    <div class="text-2xl font-bold">{{ stats.nb_etudiants }}</div>
-  </div>
+<div class="container-fluid py-4">
+    <h1 class="text-2xl font-bold mb-4">Tableau de Bord Directeur</h1>
+    <p class="text-gray-700 mb-4">Gestion complète de l'établissement - Validation des notes et suivi en temps réel</p>
+    
+    <!-- Statistiques -->
+    <div class="grid md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white shadow rounded p-4 border-l-4 border-yellow-500">
+            <div class="text-sm text-gray-500">Notes en attente</div>
+            <div class="text-2xl font-bold text-yellow-600">{{ stats.notes_en_attente }}</div>
+            <a href="{{ url_for('admin.gestion_notes') }}" class="text-xs text-blue-600 hover:underline">Valider →</a>
+        </div>
+        <div class="bg-white shadow rounded p-4 border-l-4 border-green-500">
+            <div class="text-sm text-gray-500">Notes validées</div>
+            <div class="text-2xl font-bold text-green-600">{{ stats.notes_validees }}</div>
+        </div>
+        <div class="bg-white shadow rounded p-4 border-l-4 border-red-500">
+            <div class="text-sm text-gray-500">Signalements</div>
+            <div class="text-2xl font-bold text-red-600">{{ stats.signalements }}</div>
+        </div>
+        <div class="bg-white shadow rounded p-4 border-l-4 border-blue-500">
+            <div class="text-sm text-gray-500">Étudiants</div>
+            <div class="text-2xl font-bold text-blue-600">{{ stats.nb_etudiants }}</div>
+        </div>
+    </div>
+
+    <!-- Actions Rapides -->
+    <div class="bg-white shadow rounded p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/></svg>
+            Actions Rapides
+        </h2>
+        <div class="grid md:grid-cols-4 gap-3">
+            <a href="{{ url_for('admin.gestion_utilisateurs') }}" class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"/></svg>
+                Créer Utilisateur
+            </a>
+            <a href="{{ url_for('admin.gestion_notes') }}" class="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-3 text-center transition relative">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                Valider Notes
+                {% if stats.notes_en_attente > 0 %}
+                <span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full px-2 py-1">{{ stats.notes_en_attente }}</span>
+                {% endif %}
+            </a>
+            <a href="{{ url_for('admin.gestion_cours') }}" class="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"/></svg>
+                Assigner Enseignant
+            </a>
+            <a href="{{ url_for('admin.gestion_creneaux') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
+                Emplois du Temps
+            </a>
+            <a href="{{ url_for('admin.gestion_notes') }}" class="bg-indigo-500 hover:bg-indigo-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                Consulter Notes
+            </a>
+            <a href="{{ url_for('admin.gestion_cours') }}" class="bg-teal-500 hover:bg-teal-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/></svg>
+                Gérer Cours
+            </a>
+            <a href="{{ url_for('admin.gestion_filieres') }}" class="bg-pink-500 hover:bg-pink-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/></svg>
+                Gérer Filières
+            </a>
+            <a href="{{ url_for('admin.gestion_conflits') }}" class="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"/></svg>
+                Vérifier Conflits
+            </a>
+        </div>
+    </div>
+
+    <!-- Notes en Attente -->
+    {% if notes_recentes %}
+    <div class="bg-white shadow rounded p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold">Notes en Attente de Validation</h2>
+            <a href="{{ url_for('admin.gestion_notes') }}" class="text-blue-600 hover:underline text-sm">Voir tout →</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Étudiant</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cours</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Filière</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Note</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for note in notes_recentes %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ note.etudiant_nom }} {{ note.etudiant_prenom }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ note.nom_cours }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ note.nom_filiere }} - {{ note.niveau }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 text-xs font-semibold rounded bg-blue-100 text-blue-800">{{ note.note }}/20</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ note.date_evaluation }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            <form method="POST" action="{{ url_for('admin.valider_note', note_id=note.id) }}" style="display:inline;">
+                                <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs transition">
+                                    ✓ Valider
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white shadow rounded p-6 text-center">
+        <svg class="w-16 h-16 mx-auto text-green-500 mb-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+        <p class="text-gray-500">Aucune note en attente de validation</p>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
-

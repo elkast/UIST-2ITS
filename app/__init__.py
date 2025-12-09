@@ -72,6 +72,7 @@ def creer_application():
     from app.blueprints.etudiant.routes import etudiant_bp
     from app.blueprints.parent.routes import parent_bp
     from app.blueprints.api.routes import api_bp
+    from app.blueprints.directeur.routes import directeur_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp, url_prefix='/admin')
@@ -80,6 +81,7 @@ def creer_application():
     app.register_blueprint(etudiant_bp, url_prefix='/etudiant')
     app.register_blueprint(parent_bp, url_prefix='/parent')
     app.register_blueprint(api_bp, url_prefix='/api')
+    app.register_blueprint(directeur_bp, url_prefix='/directeur')
     
     # Route d'accueil
     @app.route('/')

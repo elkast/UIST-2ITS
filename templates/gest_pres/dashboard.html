@@ -1,20 +1,54 @@
 {% extends "base.html" %}
 {% block titre %}Présences{% endblock %}
 {% block contenu %}
-<h1 class="text-2xl font-bold mb-4">Suivi des présences</h1>
-<p class="text-gray-700 mb-4">Synthèse des présences enseignants.</p>
-{% if stats_enseignants %}
-<div class="space-y-3">
-  {% for s in stats_enseignants %}
-  <div class="bg-white shadow rounded p-4">
-    <div class="font-semibold">{{ s.enseignant.prenom }} {{ s.enseignant.nom }}</div>
-    <div class="text-sm text-gray-600">Taux de présence : {{ s.taux_presence }}%</div>
-    <div class="text-sm text-gray-600">Heures prévues : {{ s.heures_prevues }} | Heures effectuées : {{ s.heures_effectuees }}</div>
-  </div>
-  {% endfor %}
-</div>
-{% else %}
-<p class="text-gray-500">Aucune donnée de présence.</p>
-{% endif %}
-{% endblock %}
+<div class="container-fluid py-4">
+    <h1 class="text-2xl font-bold mb-4">Gestionnaire Présences - Suivi Enseignants</h1>
+    <p class="text-gray-700 mb-4">Gestion et suivi des présences enseignants</p>
 
+    <!-- Actions Rapides -->
+    <div class="bg-white shadow rounded p-6 mb-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/></svg>
+            Actions Rapides
+        </h2>
+        <div class="grid md:grid-cols-4 gap-3">
+            <a href="{{ url_for('admin.gestion_presences') }}" class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                Marquer Présences
+            </a>
+            <a href="{{ url_for('admin.statistiques_enseignants') }}" class="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/></svg>
+                Statistiques
+            </a>
+            <a href="{{ url_for('admin.gestion_enseignants') }}" class="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/></svg>
+                Vue Enseignants
+            </a>
+            <a href="{{ url_for('admin.gestion_presences_enseignants') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                Historique
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques Présences -->
+    {% if stats_enseignants %}
+    <div class="bg-white shadow rounded p-6">
+        <h2 class="text-lg font-bold mb-4">Synthèse des Présences</h2>
+        <div class="space-y-3">
+            {% for s in stats_enseignants %}
+            <div class="bg-white shadow rounded p-4 border-l-4 {% if s.taux_presence >= 90 %}border-green-500{% elif s.taux_presence >= 70 %}border-yellow-500{% else %}border-red-500{% endif %}">
+                <div class="font-semibold">{{ s.enseignant.prenom }} {{ s.enseignant.nom }}</div>
+                <div class="text-sm text-gray-600">Taux de présence : {{ s.taux_presence }}%</div>
+                <div class="text-sm text-gray-600">Heures prévues : {{ s.heures_prevues }} | Heures effectuées : {{ s.heures_effectuees }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="bg-white shadow rounded p-6 text-center">
+        <p class="text-gray-500">Aucune donnée de présence disponible.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

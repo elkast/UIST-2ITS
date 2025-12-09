@@ -97,8 +97,11 @@ def generer_matricule(role):
 
 def role_required(allowed_roles):
     """
-    Décorateur léger pour restreindre l'accès aux routes selon le rôle.
+    Décorateur pour restreindre l'accès aux routes selon le rôle avec support de hiérarchie.
     Utilise Flask-Login si disponible, sinon retombe sur la session existante.
+    
+    SUPER_ADMIN et ADMIN ont accès à tout.
+    Les autres rôles doivent être explicitement dans allowed_roles.
 
     Usage :
         @role_required(['SUPER_ADMIN', 'DIRECTEUR'])
@@ -121,14 +124,24 @@ def role_required(allowed_roles):
             if not user_role:
                 return abort(401)  # Non connecté / rôle absent
 
-            # 2) Vérification du rôle
-            if allowed_roles and user_role not in allowed_roles:
-                # Log minimal côté serveur pour audit
-                print(
-                    f"ACCÈS REFUSÉ: {user_id or 'inconnu'} a tenté d'accéder "
-                    f"à une route protégée ({allowed_roles})."
-                )
-                return abort(403)
+            # 2) Vérification du rôle avec hiérarchie
+            # SUPER_ADMIN et ADMIN ont accès à tout
+            if user_role in ['SUPER_ADMIN', 'sous_admin', 'ADMIN', 'administration']:
+                return f(*args, **kwargs)
+            
+            # Pour les autres rôles, vérifier s'ils sont dans allowed_roles
+            # Support des variantes de noms (majuscules/minuscules)
+            role_variants = [user_role, user_role.upper(), user_role.lower()]
+            
+            if allowed_roles:
+                has_access = any(variant in allowed_roles for variant in role_variants)
+                if not has_access:
+                    # Log minimal côté serveur pour audit
+                    print(
+                        f"ACCÈS REFUSÉ: {user_id or 'inconnu'} (rôle: {user_role}) a tenté d'accéder "
+                        f"à une route protégée (rôles autorisés: {allowed_roles})."
+                    )
+                    return abort(403)
 
             return f(*args, **kwargs)
 
