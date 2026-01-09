@@ -83,11 +83,12 @@ def creer_application():
     app.register_blueprint(api_bp, url_prefix='/api')
     app.register_blueprint(directeur_bp, url_prefix='/directeur')
     
-    # Route d'accueil
-    @app.route('/')
-    def index():
-        from flask import redirect, url_for
-        return redirect(url_for('auth.connexion'))
+    # Initialiser les middlewares
+    from app.middleware import initialize_middleware
+    initialize_middleware(app)
+    
+    # NOTE: La route '/' est gérée par auth_bp.landing() dans app/blueprints/auth/routes.py
+    # Elle affiche la landing page pour les visiteurs non connectés
     
     # Route de diagnostic
     @app.route('/diagnostic')
@@ -95,23 +96,48 @@ def creer_application():
         from flask import render_template
         return render_template('diagnostic.html')
 
-    # Pages d'erreurs customisées
-    from flask import render_template as rt
+    # Pages d'erreurs customisées avec logging
+    from flask import render_template as rt, session, request
+    from app.exceptions import log_error, log_security_event
 
     @app.errorhandler(401)
     def error_401(e):
+        try:
+            log_security_event('unauthorized_access', 
+                              session.get('utilisateur_id', 'anonymous'),
+                              session.get('role', 'unknown'),
+                              request.remote_addr,
+                              {'url': request.url, 'error': str(e)})
+        except:
+            pass  # Ne pas bloquer l'affichage de l'erreur si le logging échoue
         return rt('errors/401.html'), 401
 
     @app.errorhandler(403)
     def error_403(e):
+        try:
+            log_security_event('forbidden_access',
+                              session.get('utilisateur_id', 'anonymous'),
+                              session.get('role', 'unknown'),
+                              request.remote_addr,
+                              {'url': request.url, 'error': str(e)})
+        except:
+            pass
         return rt('errors/403.html'), 403
 
     @app.errorhandler(404)
     def error_404(e):
+        try:
+            log_error(e, {'type': '404', 'url': request.url})
+        except:
+            pass
         return rt('errors/404.html'), 404
 
     @app.errorhandler(500)
     def error_500(e):
+        try:
+            log_error(e, {'type': '500', 'url': request.url})
+        except:
+            pass
         return rt('errors/500.html'), 500
     
     return app

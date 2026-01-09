@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UIST-2ITS - L'Excellence Technologique au Service de l'Éducation</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo2.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'uist-bleu': '#00A3E0',
+                        'uist-jaune': '#D2F700',
+                        'uist-orange': '#FF6B35',
+                        'uist-vert': '#4CAF50',
+                        'uist-violet': '#9C27B0',
+                    },
+                    fontFamily: {
+                        'uist': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .gradient-hero {
+            background: linear-gradient(135deg, #00A3E0 0%, #0077B6 50%, #D2F700 100%);
+        }
+        
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(0, 163, 224, 0.05) 0%, rgba(210, 247, 0, 0.05) 100%);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes fade-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fade-in-up 0.8s ease-out forwards;
+        }
+        
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number {
+            background: linear-gradient(135deg, #00A3E0, #D2F700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-uist">
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 z-50 bg-white bg-opacity-95 backdrop-blur-md shadow-md">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="UIST-2ITS" class="h-12 w-auto">
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-black text-uist-bleu tracking-tight">UIST</span>
+                        <span class="text-sm font-bold text-uist-orange tracking-wider">2ITS</span>
+                    </div>
+                </div>
+                
+                <!-- CTA -->
+                <a href="{{ url_for('auth.connexion') }}" 
+                   class="inline-flex items-center px-6 py-3 bg-uist-bleu hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                    Se Connecter
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 lg:pt-40 lg:pb-32 gradient-hero text-white overflow-hidden">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <!-- Contenu -->
+                <div class="space-y-8 fade-in-up">
+                    <div class="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full text-sm font-medium">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Plateforme Nouvelle Génération
+                    </div>
+                    
+                    <h1 class="text-5xl lg:text-7xl font-black leading-tight">
+                        L'Excellence<br>
+                        <span class="text-uist-jaune">Technologique</span><br>
+                        au Service de<br>
+                        l'Éducation
+                    </h1>
+                    
+                    <p class="text-xl lg:text-2xl text-blue-100 leading-relaxed max-w-2xl">
+                        UIST-2ITS est une solution complète et innovante pour la gestion académique, 
+                        administrative et pédagogique de l'Université Internationale des Sciences et Technologies.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                        <a href="{{ url_for('auth.connexion') }}" 
+                           class="inline-flex items-center justify-center px-8 py-4 bg-white text-uist-bleu font-bold rounded-xl hover:bg-gray-50 transition-all duration-200 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1">
+                            Accéder au système
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                            </svg>
+                        </a>
+                        
+                        <a href="#features" 
+                           class="inline-flex items-center justify-center px-8 py-4 bg-transparent border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-uist-bleu transition-all duration-200">
+                            Découvrir les fonctionnalités
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Illustration -->
+                <div class="hidden lg:block relative">
+                    <div class="absolute inset-0 bg-white bg-opacity-10 backdrop-blur-3xl rounded-3xl transform rotate-6 animate-float"></div>
+                    <div class="relative bg-white bg-opacity-10 backdrop-blur-xl rounded-3xl p-8 border border-white border-opacity-20">
+                        <div class="grid grid-cols-2 gap-6">
+                            <!-- Statistiques animées -->
+                            <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-2xl p-6 text-center fade-in-up delay-100">
+                                <div class="text-4xl font-black mb-2">98%</div>
+                                <div class="text-sm opacity-90">Taux de satisfaction</div>
+                            </div>
+                            <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-2xl p-6 text-center fade-in-up delay-200">
+                                <div class="text-4xl font-black mb-2">5000+</div>
+                                <div class="text-sm opacity-90">Étudiants actifs</div>
+                            </div>
+                            <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-2xl p-6 text-center fade-in-up delay-300">
+                                <div class="text-4xl font-black mb-2">200+</div>
+                                <div class="text-sm opacity-90">Enseignants</div>
+                            </div>
+                            <div class="bg-white bg-opacity-20 backdrop-blur-md rounded-2xl p-6 text-center fade-in-up delay-400">
+                                <div class="text-4xl font-black mb-2">24/7</div>
+                                <div class="text-sm opacity-90">Disponibilité</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 lg:py-32 bg-white">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl lg:text-5xl font-black text-gray-900 mb-4">
+                    Les Piliers du Système
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Une plateforme robuste et complète qui révolutionne la gestion académique
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Feature 1: Gestion des Notes -->
+                <div class="feature-card bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-uist-bleu">
+                    <div class="w-16 h-16 bg-gradient-to-br from-uist-bleu to-blue-700 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Gestion des Notes & Workflow</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Cycle de vie complet : Saisie → Soumission → Validation → Publication. 
+                        Transparence totale avec système RBAC garantissant l'intégrité des données.
+                    </p>
+                    <div class="flex items-center text-sm font-medium text-uist-bleu">
+                        <span>En savoir plus</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Bulletins Automatisés -->
+                <div class="feature-card bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-uist-bleu">
+                    <div class="w-16 h-16 bg-gradient-to-br from-uist-orange to-red-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Bulletins PDF Professionnels</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Génération automatique de PDF avec calculs de moyennes pondérées, 
+                        classements et signatures officielles. Export individuel ou en masse.
+                    </p>
+                    <div class="flex items-center text-sm font-medium text-uist-orange">
+                        <span>En savoir plus</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Détection de Conflits -->
+                <div class="feature-card bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-uist-bleu">
+                    <div class="w-16 h-16 bg-gradient-to-br from-uist-vert to-green-700 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Intelligence EDT (RG01)</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Détection automatique des conflits d'emploi du temps : 
+                        double réservation de salles, chevauchements d'enseignants.
+                    </p>
+                    <div class="flex items-center text-sm font-medium text-uist-vert">
+                        <span>En savoir plus</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Feature 4: Import Excel Sécurisé -->
+                <div class="feature-card bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-uist-bleu">
+                    <div class="w-16 h-16 bg-gradient-to-br from-uist-violet to-purple-700 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Import Excel Sécurisé</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Validation automatique, protection CSRF, requêtes paramétrées anti-injection. 
+                        Traçabilité complète avec audit logs.
+                    </p>
+                    <div class="flex items-center text-sm font-medium text-uist-violet">
+                        <span>En savoir plus</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Feature 5: Temps Réel -->
+                <div class="feature-card bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-uist-bleu">
+                    <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Notifications Temps Réel</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Système de polling intelligent pour la disponibilité des enseignants 
+                        et mises à jour des notes sans rafraîchissement.
+                    </p>
+                    <div class="flex items-center text-sm font-medium text-yellow-600">
+                        <span>En savoir plus</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Feature 6: Multi-Rôles -->
+                <div class="feature-card bg-white border-2 border-gray-100 rounded-2xl p-8 hover:border-uist-bleu">
+                    <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-red-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Expérience Multi-Rôles</h3>
+                    <p class="text-gray-600 leading-relaxed mb-4">
+                        Interfaces optimisées pour chaque acteur : Étudiants, Parents, Enseignants, 
+                        Direction. Responsive et intuitive.
+                    </p>
+                    <div class="flex items-center text-sm font-medium text-pink-600">
+                        <span>En savoir plus</span>
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Workflow Section -->
+    <section class="py-20 lg:py-32 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl lg:text-5xl font-black text-gray-900 mb-4">
+                    Workflow de Validation des Notes
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Un processus rigoureux en 4 étapes garantissant l'intégrité académique
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-4 gap-6 max-w-6xl mx-auto">
+                <!-- Étape 1 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border-t-4 border-uist-bleu transform transition hover:-translate-y-2">
+                    <div class="w-12 h-12 bg-uist-bleu text-white rounded-full flex items-center justify-center font-bold text-xl mb-4">1</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">Saisie</h3>
+                    <p class="text-sm text-gray-600">L'enseignant saisit les notes et les soumet au Directeur</p>
+                </div>
+
+                <!-- Étape 2 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border-t-4 border-uist-orange transform transition hover:-translate-y-2">
+                    <div class="w-12 h-12 bg-uist-orange text-white rounded-full flex items-center justify-center font-bold text-xl mb-4">2</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">Vérification</h3>
+                    <p class="text-sm text-gray-600">Le Directeur vérifie et valide ou modifie les notes</p>
+                </div>
+
+                <!-- Étape 3 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border-t-4 border-uist-vert transform transition hover:-translate-y-2">
+                    <div class="w-12 h-12 bg-uist-vert text-white rounded-full flex items-center justify-center font-bold text-xl mb-4">3</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">Publication</h3>
+                    <p class="text-sm text-gray-600">Les notes validées deviennent visibles aux étudiants et parents</p>
+                </div>
+
+                <!-- Étape 4 -->
+                <div class="bg-white rounded-2xl p-6 shadow-lg border-t-4 border-uist-violet transform transition hover:-translate-y-2">
+                    <div class="w-12 h-12 bg-uist-violet text-white rounded-full flex items-center justify-center font-bold text-xl mb-4">4</div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-3">Bulletins</h3>
+                    <p class="text-sm text-gray-600">Génération automatique des bulletins PDF avec moyennes et classements</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section class="py-20 lg:py-32 bg-white">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div>
+                    <h2 class="text-4xl lg:text-5xl font-black text-gray-900 mb-6">
+                        Technologie &<br>
+                        <span class="text-uist-bleu">Sécurité</span>
+                    </h2>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        Une infrastructure de pointe garantissant la protection et la fiabilité de vos données académiques
+                    </p>
+                    
+                    <div class="space-y-6">
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-uist-bleu" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-1">Sécurité Renforcée</h3>
+                                <p class="text-gray-600">Hachage Bcrypt, sessions sécurisées et système RBAC complet</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-uist-vert" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-1">Base de Données Relationnelle</h3>
+                                <p class="text-gray-600">MySQL avec intégrité référentielle et requêtes optimisées</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="flex-shrink-0 w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <svg class="w-6 h-6 text-uist-violet" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-gray-900 mb-1">Audit & Traçabilité</h3>
+                                <p class="text-gray-600">Logs complets de toutes les actions critiques</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="gradient-card rounded-2xl p-8 text-center">
+                        <div class="text-5xl font-black stat-number mb-2">100%</div>
+                        <div class="text-gray-700 font-medium">Données Chiffrées</div>
+                    </div>
+                    <div class="gradient-card rounded-2xl p-8 text-center">
+                        <div class="text-5xl font-black stat-number mb-2">0</div>
+                        <div class="text-gray-700 font-medium">Incidents Sécurité</div>
+                    </div>
+                    <div class="gradient-card rounded-2xl p-8 text-center">
+                        <div class="text-5xl font-black stat-number mb-2">99.9%</div>
+                        <div class="text-gray-700 font-medium">Uptime Garanti</div>
+                    </div>
+                    <div class="gradient-card rounded-2xl p-8 text-center">
+                        <div class="text-5xl font-black stat-number mb-2">&lt;2s</div>
+                        <div class="text-gray-700 font-medium">Temps de Réponse</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Vision Futuriste Section -->
+    <section class="py-20 lg:py-32 bg-gradient-to-br from-uist-bleu to-blue-900 text-white">
+        <div class="container mx-auto px-4 lg:px-8 text-center">
+            <div class="max-w-4xl mx-auto">
+                <div class="inline-flex items-center px-4 py-2 bg-white bg-opacity-20 backdrop-blur-sm rounded-full text-sm font-medium mb-8">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Roadmap 2026
+                </div>
+
+                <h2 class="text-4xl lg:text-5xl font-black mb-6">
+                    Vision du Futur
+                </h2>
+                <p class="text-xl text-blue-100 mb-12 leading-relaxed">
+                    UIST-2ITS ne cesse d'évoluer pour offrir les technologies les plus avancées
+                </p>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-8 border border-white border-opacity-20">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-xl mb-3">Intelligence Artificielle</h3>
+                        <p class="text-blue-100">Prédiction des résultats et recommandations personnalisées</p>
+                    </div>
+
+                    <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-8 border border-white border-opacity-20">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-xl mb-3">Blockchain</h3>
+                        <p class="text-blue-100">Certification inaltérable des diplômes et relevés de notes</p>
+                    </div>
+
+                    <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-8 border border-white border-opacity-20">
+                        <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="font-bold text-xl mb-3">Application Mobile</h3>
+                        <p class="text-blue-100">React Native - iOS et Android (Lancement Q2 2026)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Final -->
+    <section class="py-20 lg:py-32 bg-white">
+        <div class="container mx-auto px-4 lg:px-8 text-center">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl lg:text-6xl font-black text-gray-900 mb-6">
+                    Prêt à Commencer ?
+                </h2>
+                <p class="text-xl text-gray-600 mb-10">
+                    Rejoignez des milliers d'utilisateurs qui font confiance à UIST-2ITS
+                </p>
+                <a href="{{ url_for('auth.connexion') }}" 
+                   class="inline-flex items-center px-10 py-5 bg-uist-bleu hover:bg-blue-700 text-white text-lg font-bold rounded-xl transition-all duration-200 shadow-2xl hover:shadow-3xl transform hover:-translate-y-1">
+                    Accéder au système
+                    <svg class="w-6 h-6 ml-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12">
+        <div class="container mx-auto px-4 lg:px-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-3 mb-6">
+                    <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="UIST-2ITS" class="h-10 w-auto">
+                    <div class="flex flex-col items-start">
+                        <span class="text-2xl font-black text-uist-bleu">UIST</span>
+                        <span class="text-sm font-bold text-uist-orange">2ITS</span>
+                    </div>
+                </div>
+                <p class="text-sm mb-4">
+                    Système de Gestion Universitaire • Université Internationale des Sciences et Technologies
+                </p>
+                <p class="text-xs text-gray-500">
+                    © 2025 UIST-2ITS. Tous droits réservés. • Flask + TailwindCSS + MySQL • Protection RBAC
+                </p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

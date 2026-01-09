@@ -18,33 +18,72 @@ def tableau_bord():
     parent_id = session.get('utilisateur_id')
     
     # Récupérer tous les enfants du parent
-    enfants = Parent.obtenir_enfants(parent_id)
+    enfants = Parent.obtenir_enfants(parent_id) if hasattr(Parent, 'obtenir_enfants') else []
     
     if not enfants:
         flash('Aucun enfant n\'est lié à votre compte. Veuillez contacter l\'administration.', 'warning')
+        enfants = []
     
     # Pour chaque enfant, récupérer les statistiques
-    enfants_stats = []
-    for enfant in enfants:
-        # Récupérer les notes récentes
-        notes = Note.obtenir_par_etudiant(enfant['etudiant_id'])
-        notes_recentes = notes[:5] if notes else []
-        
-        # Calculer la moyenne générale
-        moyenne = Note.calculer_moyenne_etudiant(enfant['etudiant_id'])
-        
-        # Récupérer l'emploi du temps
-        edt = EmploiDuTemps.obtenir_par_filiere(enfant['filiere_id'])
-        
-        enfants_stats.append({
-            'info': enfant,
-            'notes_recentes': notes_recentes,
-            'moyenne': moyenne,
-            'nb_cours': len(edt) if edt else 0
-        })
+    enfants_list = []
+    moyenne_globale = 0
+    nb_alertes = 0
+    alertes = []
     
-    return render_template('parent/dashboard.html', 
-                         enfants_stats=enfants_stats)
+    for enfant in enfants:
+        try:
+            # Récupérer les notes validées uniquement
+            notes = Note.obtenir_par_etudiant(enfant.get('etudiant_id')) or []
+            notes_validees = [n for n in notes if n.get('statut') == 'VALIDÉ']
+            notes_recentes = notes_validees[:5]
+            
+            # Calculer la moyenne (simple)
+            if notes_validees:
+                total_points = sum(float(n['note']) * float(n['coefficient']) for n in notes_validees)
+                total_coefs = sum(float(n['coefficient']) for n in notes_validees)
+                moyenne = round(total_points / total_coefs, 2) if total_coefs > 0 else 0
+            else:
+                moyenne = None
+            
+            # Récupérer l'étudiant complet
+            etudiant_info = Etudiant.obtenir_par_id(enfant.get('etudiant_id'))
+            
+            enfant_data = {
+                'id': enfant.get('etudiant_id'),
+                'prenom': etudiant_info.get('prenom') if etudiant_info else '-',
+                'nom': etudiant_info.get('nom') if etudiant_info else '-',
+                'matricule': etudiant_info.get('matricule') if etudiant_info else '-',
+                'nom_filiere': etudiant_info.get('nom_filiere') if etudiant_info else '-',
+                'niveau': etudiant_info.get('niveau') if etudiant_info else '-',
+                'moyenne': moyenne,
+                'evolution': None,  # À implémenter
+                'rang': None,
+                'total_etudiants': None,
+                'nb_notes_validees': len(notes_validees),
+                'nb_notes_en_attente': len([n for n in notes if n.get('statut') != 'VALIDÉ']),
+                'nb_bulletins': 0,
+                'notes_recentes': notes_recentes,
+                'bulletins': [],
+                'evolution_mensuelle': []
+            }
+            
+            enfants_list.append(enfant_data)
+            
+            if moyenne:
+                moyenne_globale += moyenne
+                
+        except Exception as e:
+            print(f"Erreur traitement enfant: {e}")
+            continue
+    
+    if enfants_list:
+        moyenne_globale = round(moyenne_globale / len(enfants_list), 2)
+    
+    return render_template('parent/dashboard_multi_enfants.html', 
+                         enfants=enfants_list,
+                         moyenne_globale=moyenne_globale,
+                         nb_alertes=nb_alertes,
+                         alertes=alertes)
 
 @parent_bp.route('/enfant/<int:etudiant_id>/notes')
 @role_required(['parent'])

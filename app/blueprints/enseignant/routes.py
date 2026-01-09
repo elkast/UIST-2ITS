@@ -11,6 +11,54 @@ import io
 
 enseignant_bp = Blueprint('enseignant', __name__)
 
+@enseignant_bp.route('/signaler-statut/<statut>', methods=['POST'])
+@role_required(['ENSEIGNANT', 'enseignant'])
+def signaler_statut(statut):
+    """
+    Signalement de présence ou absence de l'enseignant
+    
+    Args:
+        statut: 'present' ou 'absent'
+    """
+    from app.exceptions import handle_exception, log_user_action
+    from app.workflows import WorkflowManager
+    from app.db import executer_requete
+    
+    enseignant_id = session.get('utilisateur_id')
+    
+    if statut not in ['present', 'absent']:
+        flash('Statut invalide', 'danger')
+        return redirect(url_for('enseignant.tableau_bord'))
+    
+    # Mettre à jour le statut dans la table Enseignants
+    statut_db = 'PRESENT' if statut == 'present' else 'ABSENT'
+    executer_requete("""
+        UPDATE Enseignants 
+        SET statut_presence = %s, 
+            derniere_maj_presence = NOW()
+        WHERE utilisateur_id = %s
+    """, (statut_db, enseignant_id))
+    
+    # Logger l'action
+    log_user_action(
+        f'enseignant_statut_{statut}',
+        f"Signalement de {statut}",
+        {'enseignant_id': enseignant_id, 'statut': statut_db}
+    )
+    
+    # Notifier l'administration si absence
+    if statut == 'absent':
+        WorkflowManager._create_notification(
+            'ADMIN',
+            'enseignant_absent',
+            f"Enseignant absent signalé",
+            {'enseignant_id': enseignant_id}
+        )
+    
+    message = 'Présence signalée avec succès' if statut == 'present' else 'Absence signalée avec succès'
+    flash(message, 'success')
+    return redirect(url_for('enseignant.tableau_bord'))
+
 @enseignant_bp.route('/tableau-bord')
 @role_required(['ENSEIGNANT', 'enseignant'])
 def tableau_bord():
@@ -18,6 +66,16 @@ def tableau_bord():
     Tableau de bord de l'enseignant
     """
     enseignant_id = session.get('utilisateur_id')
+    
+    # Récupérer le statut de présence
+    from app.db import executer_requete_unique
+    enseignant_info = executer_requete_unique("""
+        SELECT statut_presence, derniere_maj_presence
+        FROM Enseignants
+        WHERE utilisateur_id = %s
+    """, (enseignant_id,))
+    
+    statut_presence = enseignant_info.get('statut_presence') if enseignant_info else 'PRESENT'
 
     # Statistiques générales
     from app.models import Enseignant, EmploiDuTemps, Note
@@ -89,7 +147,8 @@ def tableau_bord():
     return render_template('enseignant/dashboard.html',
                          stats=stats,
                          cours_enseignes=cours_enseignes,
-                         prochains_cours=prochains_cours[:5])  # Limiter à 5 prochains cours
+                         prochains_cours=prochains_cours[:5],
+                         statut_presence=statut_presence)  # Limiter à 5 prochains cours
 
 @enseignant_bp.route('/notes')
 @role_required(['enseignant', 'ENSEIGNANT'])

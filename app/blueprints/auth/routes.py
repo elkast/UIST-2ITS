@@ -8,6 +8,21 @@ from app.utils import obtenir_role_dashboard
 
 auth_bp = Blueprint('auth', __name__)
 
+@auth_bp.route('/')
+@auth_bp.route('/landing')
+def landing():
+    """
+    Page d'accueil (Landing Page) du système UIST-2ITS
+    Présentation prestigieuse de la plateforme
+    """
+    # Si déjà connecté, rediriger vers le dashboard
+    if 'utilisateur_id' in session:
+        role = session.get('role')
+        route_name = obtenir_role_dashboard(role)
+        return redirect(url_for(route_name))
+    
+    return render_template('landing.html')
+
 @auth_bp.route('/connexion', methods=['GET', 'POST'])
 def connexion():
     """

@@ -16,6 +16,15 @@ from reportlab.lib.styles import getSampleStyleSheet
 
 admin_bp = Blueprint('admin', __name__)
 
+@admin_bp.route('/test-models')
+def test_models():
+    """Route de test pour vérifier les imports"""
+    try:
+        from app.models_extended import Notification, Bulletin, ImportNote
+        return f"✅ Import OK - Notification: {Notification}, Bulletin: {Bulletin}, ImportNote: {ImportNote}"
+    except Exception as e:
+        return f"❌ Erreur import: {str(e)}"
+
 @admin_bp.route('/directeur-dashboard')
 @role_required(['directeur', 'DIRECTEUR', 'ADMIN', 'SUPER_ADMIN'])
 def directeur_dashboard():
@@ -56,23 +65,35 @@ def gestionnaire_pv_dashboard():
     """
     Dashboard du Gestionnaire PV - Génération de bulletins
     """
-    from app.models import Bulletin, Etudiant, Filiere
+    from app.models import Etudiant, Filiere
+    try:
+        from app.models_extended import Bulletin
+    except ImportError:
+        Bulletin = None
     
     # Statistiques
-    bulletins = Bulletin.obtenir_tous() or []
+    bulletins = Bulletin.obtenir_tous() if Bulletin else []
     etudiants = Etudiant.obtenir_tous() or []
     filieres = Filiere.obtenir_toutes() or []
     
     stats = {
-        'bulletins_generes': len(bulletins),
+        'bulletins_generes': len(bulletins) if bulletins else 0,
         'nb_etudiants': len(etudiants),
-        'nb_filieres': len(filieres)
+        'nb_filieres': len(filieres),
+        'taux_reussite': 0  # À calculer
     }
     
-    return render_template('gest_pv/dashboard.html',
+    # Stats par filière
+    stats_filieres = []
+    
+    return render_template('gest_pv/dashboard_enhanced.html',
                          stats=stats,
-                         bulletins=bulletins,
-                         filieres=filieres)
+                         bulletins=bulletins or [],
+                         filieres=filieres,
+                         stats_filieres=stats_filieres,
+                         filiere_id=None,
+                         semestre=None,
+                         annee=None)
 
 
 @admin_bp.route('/gestionnaire-examens-dashboard')
@@ -81,22 +102,29 @@ def gestionnaire_examens_dashboard():
     """
     Dashboard du Gestionnaire Examens - Structuration et import
     """
-    from app.models import Note, ImportNote, Cours, Filiere
+    from app.models import Cours, Filiere
+    try:
+        from app.models_extended import ImportNote
+    except ImportError:
+        ImportNote = None
     
     # Statistiques
-    imports = ImportNote.obtenir_historique() or []
+    imports = ImportNote.obtenir_historique() if ImportNote else []
     cours = Cours.obtenir_tous() or []
     filieres = Filiere.obtenir_toutes() or []
     
     stats = {
-        'imports_total': len(imports),
+        'imports_total': len(imports) if imports else 0,
+        'imports_succes': 0,
+        'imports_erreurs': 0,
         'nb_cours': len(cours),
-        'nb_filieres': len(filieres)
+        'nb_filieres': len(filieres),
+        'notes_total': 0
     }
     
-    return render_template('gest_exam/dashboard.html',
+    return render_template('gest_exam/dashboard_enhanced.html',
                          stats=stats,
-                         imports=imports,
+                         imports=imports or [],
                          cours=cours,
                          filieres=filieres)
 

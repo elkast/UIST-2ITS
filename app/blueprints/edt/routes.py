@@ -10,17 +10,22 @@ from datetime import datetime, timedelta
 edt_bp = Blueprint('edt', __name__)
 
 @edt_bp.route('/mon-emploi-du-temps')
+@edt_bp.route('/consultation-edt')
 @connexion_requise
 def mon_emploi_du_temps():
     """
     Affichage de l'emploi du temps de l'utilisateur connecté
     Selon son rôle (étudiant, enseignant, parent)
+    Route principale: /mon-emploi-du-temps
+    Alias: /consultation-edt (pour compatibilité avec dashboards)
     """
     utilisateur_id = session.get('utilisateur_id')
     role = session.get('role')
 
     if not utilisateur_id or not role:
         flash('Session expirée. Veuillez vous reconnecter.', 'danger')
+        from app.exceptions import log_user_action
+        log_user_action('session_expired', 'edt_access_denied', {'ip': request.remote_addr})
         return redirect(url_for('auth.connexion'))
 
     # Récupérer les données selon le rôle
@@ -38,6 +43,8 @@ def mon_emploi_du_temps():
         titre = "Emploi du Temps de mon Enfant"
     else:
         flash('Rôle non autorisé pour consulter l\'emploi du temps.', 'danger')
+        from app.exceptions import log_security_event
+        log_security_event('unauthorized_edt_access', utilisateur_id, role, request.remote_addr)
         return redirect(url_for('auth.connexion'))
 
     # Organiser par jour

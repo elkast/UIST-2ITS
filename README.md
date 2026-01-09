@@ -1,6 +1,6 @@
 # 🎓 UIST-2ITS - Système de Gestion Universitaire
 
-## 📋 Vue d'ensemble
+##  Vue d'ensemble
 
 **UIST-2ITS** est un système de gestion universitaire moderne, optimisé et sécurisé développé pour l'Université Internationale des Sciences et Technologies (2ITS). Solution complète pour la gestion académique, administrative et pédagogique avec workflow de validation des notes.
 
