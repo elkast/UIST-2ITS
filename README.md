@@ -19,6 +19,8 @@ python get_admin_credentials.py
 
 ## 📋 Comptes Disponibles
 
+#LES CONNEXIONS SONT PAR MATRICULE ? VOLET  MOT DE PASSE GELER
+
 | Rôle | Email | Mot de passe | Description |
 |------|-------|--------------|-------------|
 | SUPER_ADMIN | admin@uist.edu | Admin@2025 | Administration système |
