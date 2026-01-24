@@ -1,104 +1,90 @@
 {% extends "base.html" %}
-{% block titre %}Validation des notes{% endblock %}
-{% block contenu %}
-<div class="container-fluid py-4">
-  <h1 class="text-2xl font-bold mb-2">Validation des Notes</h1>
-  <p class="text-gray-600 mb-6">Valider les notes soumises par les enseignants</p>
 
-  <!-- Filtres -->
-  <div class="bg-white shadow rounded p-4 mb-4">
-    <form method="GET" class="grid md:grid-cols-3 gap-4">
-      <div>
-        <label class="block text-sm font-medium mb-1">Filière</label>
-        <select name="filiere" class="w-full border rounded px-3 py-2">
-          <option value="">Toutes</option>
-          {% for filiere in filieres %}
-          <option value="{{ filiere.id }}" {% if filiere_filtre == filiere.id|string %}selected{% endif %}>{{ filiere.nom_filiere }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium mb-1">Niveau</label>
-        <select name="niveau" class="w-full border rounded px-3 py-2">
-          <option value="">Tous</option>
-          <option value="L1" {% if niveau_filtre == 'L1' %}selected{% endif %}>L1</option>
-          <option value="L2" {% if niveau_filtre == 'L2' %}selected{% endif %}>L2</option>
-          <option value="L3" {% if niveau_filtre == 'L3' %}selected{% endif %}>L3</option>
-          <option value="M1" {% if niveau_filtre == 'M1' %}selected{% endif %}>M1</option>
-          <option value="M2" {% if niveau_filtre == 'M2' %}selected{% endif %}>M2</option>
-        </select>
-      </div>
-      <div class="flex items-end">
-        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded w-full">Filtrer</button>
-      </div>
-    </form>
-  </div>
+{% block title %}Validation des Notes - Directeur{% endblock %}
 
-  <!-- Validation en lot -->
-  <div class="bg-white shadow rounded p-4 mb-4">
-    <form method="POST" action="{{ url_for('directeur.valider_lot_notes') }}" id="formLot">
-      <div class="flex justify-between items-center">
-        <span><span id="count" class="font-bold">0</span> sélectionnée(s)</span>
-        <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded">✓ Valider sélection</button>
-      </div>
-    </form>
-  </div>
-
-  {% if notes %}
-  <div class="overflow-x-auto bg-white shadow rounded">
-    <table class="min-w-full text-sm">
-      <thead class="bg-gray-100">
-        <tr>
-          <th class="px-3 py-2"><input type="checkbox" id="all" onclick="toggleAll(this)" class="rounded"></th>
-          <th class="px-3 py-2 text-left">Étudiant</th>
-          <th class="px-3 py-2 text-left">Matricule</th>
-          <th class="px-3 py-2 text-left">Cours</th>
-          <th class="px-3 py-2 text-left">Filière</th>
-          <th class="px-3 py-2 text-left">Type</th>
-          <th class="px-3 py-2 text-left">Note</th>
-          <th class="px-3 py-2 text-left">Coeff</th>
-          <th class="px-3 py-2 text-left">Date</th>
-          <th class="px-3 py-2 text-left">Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for n in notes %}
-        <tr class="border-t hover:bg-gray-50">
-          <td class="px-3 py-2"><input type="checkbox" name="note_ids[]" value="{{ n.id }}" form="formLot" class="cb rounded" onchange="updateCount()"></td>
-          <td class="px-3 py-2 font-medium">{{ n.etudiant_nom }} {{ n.etudiant_prenom }}</td>
-          <td class="px-3 py-2 text-gray-500">{{ n.matricule }}</td>
-          <td class="px-3 py-2">{{ n.nom_cours }}</td>
-          <td class="px-3 py-2">{{ n.nom_filiere }} - {{ n.niveau }}</td>
-          <td class="px-3 py-2">{{ n.type_evaluation }}</td>
-          <td class="px-3 py-2"><span class="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs font-semibold">{{ n.note }}/20</span></td>
-          <td class="px-3 py-2">{{ n.coefficient }}</td>
-          <td class="px-3 py-2 text-gray-500">{{ n.date_evaluation }}</td>
-          <td class="px-3 py-2">
-            <form method="post" action="{{ url_for('directeur.valider_note', note_id=n.id) }}">
-              <button class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs">✓ Valider</button>
-            </form>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-  {% else %}
-  <div class="bg-white shadow rounded p-8 text-center">
-    <svg class="w-16 h-16 mx-auto text-green-500 mb-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
-    <p class="text-gray-500">Aucune note en attente de validation</p>
-  </div>
-  {% endif %}
-</div>
-
-<script>
-function toggleAll(src) {
-  document.querySelectorAll('.cb').forEach(cb => cb.checked = src.checked);
-  updateCount();
-}
-function updateCount() {
-  document.getElementById('count').textContent = document.querySelectorAll('.cb:checked').length;
-}
-</script>
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('directeur.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('directeur.validation_notes') }}">
+        <i class="bi bi-clipboard-check"></i> Validation Notes
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('directeur.conflits_edt') }}">
+        <i class="bi bi-exclamation-diamond"></i> Conflits EDT
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('directeur.rapports_pedagogiques') }}">
+        <i class="bi bi-file-earmark-bar-graph"></i> Rapports
+    </a>
+</li>
 {% endblock %}
 
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-clipboard-check"></i> Validation des Notes
+            </h1>
+            <p class="text-muted">Notes en attente de validation</p>
+        </div>
+    </div>
+    
+    <!-- Notes en attente -->
+    <div class="card">
+        <div class="card-body">
+            {% if notes %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Étudiant</th>
+                            <th>Filière</th>
+                            <th>Cours</th>
+                            <th>Type</th>
+                            <th>Note</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in notes %}
+                        <tr>
+                            <td>{{ item.note.date_saisie|format_date }}</td>
+                            <td><strong>{{ item.etudiant.prenom }} {{ item.etudiant.nom }}</strong></td>
+                            <td><span class="badge bg-primary">{{ item.filiere.code_filiere }}</span></td>
+                            <td>{{ item.cours.libelle }}</td>
+                            <td><span class="badge bg-info">{{ item.note.type_evaluation }}</span></td>
+                            <td>
+                                <span class="badge {% if item.note.valeur_note >= 10 %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ item.note.valeur_note|format_note }}/20
+                                </span>
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ url_for('directeur.valider_note_route', note_id=item.note.id_note) }}" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-success">
+                                        <i class="bi bi-check-circle"></i> Valider
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-check-circle display-1 text-success"></i>
+                <p class="text-muted mt-3">Aucune note en attente de validation</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

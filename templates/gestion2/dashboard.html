@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord - Gestion 2{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion2.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.liste_etudiants') }}">
+        <i class="bi bi-people"></i> Étudiants
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.saisie_notes') }}">
+        <i class="bi bi-pencil-square"></i> Notes
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.liste_parents') }}">
+        <i class="bi bi-person-hearts"></i> Parents
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.generer_bulletins') }}">
+        <i class="bi bi-file-earmark-text"></i> Bulletins
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-journal-bookmark text-success"></i> Gestion 2
+            </h1>
+            <p class="text-muted">Pôle Scolarité & Évaluations</p>
+        </div>
+    </div>
+    
+    <!-- Statistiques Principales -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card stat-success">
+                <div class="stat-value">{{ total_etudiants }}</div>
+                <div class="stat-label">Étudiants</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-value">{{ total_parents }}</div>
+                <div class="stat-label">Parents</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card stat-warning">
+                <div class="stat-value">{{ notes_attente }}</div>
+                <div class="stat-label">Notes en Attente</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-value">{{ filieres|length }}</div>
+                <div class="stat-label">Filières</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions Rapides -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning-fill"></i> Actions Rapides
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('gestion2.nouvel_etudiant') }}" class="btn btn-success w-100">
+                                <i class="bi bi-person-plus"></i> Nouvel Étudiant
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('gestion2.nouveau_parent') }}" class="btn btn-primary w-100">
+                                <i class="bi bi-person-plus"></i> Nouveau Parent
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('gestion2.saisie_notes') }}" class="btn btn-warning w-100">
+                                <i class="bi bi-pencil-square"></i> Saisir Note
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('gestion2.liaison_parent') }}" class="btn btn-info w-100">
+                                <i class="bi bi-link-45deg"></i> Liaison Parent
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Filières -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-diagram-3"></i> Filières Actives
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for filiere in filieres %}
+                        <div class="col-md-4">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ filiere.nom_filiere }}</h5>
+                                    <p class="card-text">
+                                        <span class="badge bg-primary">{{ filiere.code_filiere }}</span>
+                                        <span class="badge bg-info">{{ filiere.niveau }}</span>
+                                    </p>
+                                    <a href="{{ url_for('gestion2.liste_etudiants', filiere_id=filiere.id_filiere) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        Voir Étudiants
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

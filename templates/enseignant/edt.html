@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Mon EDT - Enseignant{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('enseignant.emploi_temps') }}">
+        <i class="bi bi-calendar-week"></i> Mon EDT
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.disponibilites') }}">
+        <i class="bi bi-clock"></i> Disponibilités
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.saisir_notes') }}">
+        <i class="bi bi-pencil-square"></i> Saisir Notes
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-calendar-week"></i> Mon Emploi du Temps
+            </h1>
+            <p class="text-muted">Semaine {{ semaine }}</p>
+        </div>
+    </div>
+    
+    <!-- Navigation Semaines -->
+    <div class="mb-3">
+        <a href="{{ url_for('enseignant.emploi_temps', semaine=semaine-1) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Semaine {{ semaine-1 }}
+        </a>
+        <span class="mx-3">Semaine {{ semaine }}</span>
+        <a href="{{ url_for('enseignant.emploi_temps', semaine=semaine+1) }}" class="btn btn-outline-secondary">
+            Semaine {{ semaine+1 }} <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+    
+    <!-- EDT -->
+    <div class="card">
+        <div class="card-body">
+            {% if creneaux %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Jour</th>
+                            <th>Horaire</th>
+                            <th>Cours</th>
+                            <th>Salle</th>
+                            <th>Filière</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in creneaux %}
+                        <tr>
+                            <td><strong>{{ item.creneau.jour }}</strong></td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ item.creneau.heure_debut.strftime('%H:%M') }} - {{ item.creneau.heure_fin.strftime('%H:%M') }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong>{{ item.cours.libelle }}</strong><br>
+                                <small class="text-muted">{{ item.cours.code_cours }}</small>
+                            </td>
+                            <td>{{ item.salle.nom_salle }}</td>
+                            <td>
+                                <span class="badge bg-primary">
+                                    {{ item.cours.filiere.code_filiere if hasattr(item.cours, 'filiere') else '-' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x display-1 text-muted"></i>
+                <p class="text-muted mt-3">Aucun cours pour cette semaine</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

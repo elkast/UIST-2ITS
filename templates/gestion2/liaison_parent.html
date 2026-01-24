@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Liaison Parent-Étudiant - Gestion 2{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.liste_etudiants') }}">
+        <i class="bi bi-people"></i> Étudiants
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.liste_parents') }}">
+        <i class="bi bi-person-hearts"></i> Parents
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion2.liaison_parent') }}">
+        <i class="bi bi-link-45deg"></i> Liaison
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-link-45deg"></i> Liaison Parent-Étudiant
+            </h1>
+            <p class="text-muted">Créer un lien de parenté</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-diagram-3"></i> Formulaire de Liaison
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="matricule_parent" class="form-label">Parent *</label>
+                            <select class="form-select" id="matricule_parent" name="matricule_parent" required>
+                                <option value="">Sélectionnez un parent</option>
+                                {% for parent_data in parents %}
+                                <option value="{{ parent_data.user.matricule }}">
+                                    {{ parent_data.user.prenom }} {{ parent_data.user.nom }} ({{ parent_data.user.matricule }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Sélectionnez le parent à lier</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="matricule_etudiant" class="form-label">Étudiant *</label>
+                            <select class="form-select" id="matricule_etudiant" name="matricule_etudiant" required>
+                                <option value="">Sélectionnez un étudiant</option>
+                                {% for etudiant_data in etudiants %}
+                                <option value="{{ etudiant_data.user.matricule }}">
+                                    {{ etudiant_data.user.prenom }} {{ etudiant_data.user.nom }} ({{ etudiant_data.user.matricule }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Sélectionnez l'étudiant à lier</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="lien_parente" class="form-label">Lien de Parenté *</label>
+                            <select class="form-select" id="lien_parente" name="lien_parente" required>
+                                {% for lien in liens %}
+                                <option value="{{ lien }}">{{ lien }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> Vérifiez bien les matricules avant de valider
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-link"></i> Créer la Liaison
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

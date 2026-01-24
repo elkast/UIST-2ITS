@@ -1,54 +1,157 @@
 {% extends "base.html" %}
-{% block titre %}Dashboard Parent{% endblock %}
-{% block contenu %}
-<div class="container-fluid py-4">
-    <h1 class="text-2xl font-bold mb-4">Espace Parent</h1>
-    <p class="text-gray-700 mb-4">Suivi de vos enfants</p>
 
-    <!-- Actions Rapides -->
-    <div class="bg-white shadow rounded p-6 mb-6">
-        <h2 class="text-lg font-bold mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/></svg>
-            Actions Rapides
-        </h2>
-        <div class="grid md:grid-cols-4 gap-3">
-            <a href="{{ url_for('parent.emploi_du_temps_enfant') }}" class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-3 text-center transition">
-                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
-                EDT Enfant
-            </a>
-            <a href="{{ url_for('parent.notes_enfant') }}" class="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-3 text-center transition">
-                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
-                Notes Enfant
-            </a>
-            <a href="{{ url_for('parent.child_view') }}" class="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-3 text-center transition">
-                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg>
-                Bulletins
-            </a>
-            <a href="{{ url_for('parent.tableau_bord') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded px-4 py-3 text-center transition">
-                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"/></svg>
-                Évolution
-            </a>
+{% block title %}Tableau de Bord - Parent{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('parent.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('parent.notifications') }}">
+        <i class="bi bi-bell"></i> Notifications
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-person-hearts text-primary"></i> Espace Parent
+            </h1>
+            <p class="text-muted">Bienvenue {{ session.get('nom_complet') }} - Suivi de vos enfants</p>
         </div>
     </div>
-
-    <!-- Statistiques Enfants -->
-    {% if enfants_stats %}
-    <div class="bg-white shadow rounded p-6">
-        <h2 class="text-lg font-bold mb-4">Suivi de vos Enfants</h2>
-        <div class="space-y-3">
-            {% for e in enfants_stats %}
-            <div class="bg-white shadow rounded p-4 border-l-4 border-blue-500">
-                <div class="font-semibold">{{ e.info.etudiant_prenom }} {{ e.info.etudiant_nom }}</div>
-                <div class="text-sm text-gray-600">Moyenne : {{ e.moyenne }}</div>
-                <div class="text-sm text-gray-600">Nombre de cours : {{ e.nb_cours }}</div>
+    
+    <!-- Liste des Enfants -->
+    {% if enfants %}
+    <div class="row g-4">
+        {% for enfant in enfants %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-person-circle"></i> 
+                        {{ enfant.user.prenom }} {{ enfant.user.nom }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <!-- Informations de Base -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <small class="text-muted">Matricule</small>
+                            <code>{{ enfant.user.matricule }}</code>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <small class="text-muted">Filière</small>
+                            <span class="badge bg-primary">{{ enfant.filiere.code_filiere }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <small class="text-muted">Lien de parenté</small>
+                            <strong>{{ enfant.lien_parente }}</strong>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <!-- Statistiques Rapides -->
+                    <div class="row text-center mb-3">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <div class="text-primary fw-bold fs-4">
+                                    {{ enfant.moyenne|format_note if enfant.moyenne else '-' }}
+                                </div>
+                                <small class="text-muted">Moyenne</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <div class="text-success fw-bold fs-4">
+                                    {{ enfant.taux_presence|default('-') }}%
+                                </div>
+                                <small class="text-muted">Assiduité</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('parent.edt_enfant', etudiant_id=enfant.etudiant.id_etudiant) }}" 
+                           class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-calendar-week"></i> Emploi du Temps
+                        </a>
+                        <a href="{{ url_for('parent.notes_enfant', etudiant_id=enfant.etudiant.id_etudiant) }}" 
+                           class="btn btn-outline-success btn-sm">
+                            <i class="bi bi-file-earmark-text"></i> Notes
+                        </a>
+                        <a href="{{ url_for('parent.assiduite_enfant', etudiant_id=enfant.etudiant.id_etudiant) }}" 
+                           class="btn btn-outline-warning btn-sm">
+                            <i class="bi bi-calendar-check"></i> Assiduité
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>
+                        <i class="bi bi-mortarboard"></i> {{ enfant.filiere.nom_filiere }}
+                    </small>
+                </div>
             </div>
-            {% endfor %}
         </div>
+        {% endfor %}
     </div>
     {% else %}
-    <div class="bg-white shadow rounded p-6 text-center">
-        <p class="text-gray-500">Aucun enfant lié à votre compte.</p>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-person-x display-1 text-muted"></i>
+                    <h5 class="mt-3 text-muted">Aucun enfant enregistré</h5>
+                    <p class="text-muted">
+                        Veuillez contacter l'administration pour créer le lien<br>
+                        entre votre compte parent et celui de votre/vos enfant(s)
+                    </p>
+                </div>
+            </div>
+        </div>
     </div>
     {% endif %}
+    
+    <!-- Informations Utiles -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-info-circle"></i> Informations Importantes</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="small mb-0">
+                                <i class="bi bi-check-circle text-success"></i> 
+                                <strong>Consultation en temps réel</strong><br>
+                                Accédez aux notes et présences dès leur validation
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="small mb-0">
+                                <i class="bi bi-check-circle text-success"></i> 
+                                <strong>Suivi personnalisé</strong><br>
+                                Suivez chaque enfant individuellement
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="small mb-0">
+                                <i class="bi bi-check-circle text-success"></i> 
+                                <strong>Notifications</strong><br>
+                                Soyez alerté des événements importants
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

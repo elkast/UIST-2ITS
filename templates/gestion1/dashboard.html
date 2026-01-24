@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord - Gestion 1{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion1.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.liste_salles') }}">
+        <i class="bi bi-building"></i> Salles
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.liste_filieres') }}">
+        <i class="bi bi-diagram-3"></i> Filières
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.liste_cours') }}">
+        <i class="bi bi-book"></i> Cours
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.emploi_temps') }}">
+        <i class="bi bi-calendar-week"></i> EDT
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-building text-primary"></i> Gestion 1
+            </h1>
+            <p class="text-muted">Pôle Logistique & Infrastructure</p>
+        </div>
+    </div>
+    
+    <!-- Statistiques Principales -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-value">{{ total_salles }}</div>
+                <div class="stat-label">Salles Disponibles</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card stat-success">
+                <div class="stat-value">{{ total_filieres }}</div>
+                <div class="stat-label">Filières Actives</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card stat-warning">
+                <div class="stat-value">{{ total_cours }}</div>
+                <div class="stat-label">Cours Programmés</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-value">{{ total_creneaux }}</div>
+                <div class="stat-label">Créneaux EDT</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions Rapides -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning-fill"></i> Actions Rapides
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <a href="{{ url_for('gestion1.nouvelle_salle') }}" class="btn btn-primary w-100">
+                                <i class="bi bi-plus-circle"></i> Nouvelle Salle
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('gestion1.nouvelle_filiere') }}" class="btn btn-success w-100">
+                                <i class="bi bi-plus-circle"></i> Nouvelle Filière
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('gestion1.nouveau_cours') }}" class="btn btn-warning w-100">
+                                <i class="bi bi-plus-circle"></i> Nouveau Cours
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="{{ url_for('gestion1.nouveau_creneau') }}" class="btn btn-info w-100">
+                                <i class="bi bi-plus-circle"></i> Nouveau Créneau EDT
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Aperçu EDT -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-calendar-week"></i> Aperçu Emploi du Temps
+                </div>
+                <div class="card-body text-center">
+                    <p class="text-muted">Consultez l'emploi du temps complet</p>
+                    <a href="{{ url_for('gestion1.emploi_temps') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-arrow-right-circle"></i> Voir l'Emploi du Temps
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,10 +1,137 @@
 {% extends "base.html" %}
-{% block titre %}Dashboard DG{% endblock %}
-{% block contenu %}
-<h1 class="text-2xl font-bold mb-4">Super Administrateur</h1>
-<p class="text-gray-700">Vue globale et actions critiques (audit, stats, configuration).</p>
-<div class="grid md:grid-cols-3 gap-4 mt-6">
-  {% include "components/stats_card.html" with context %}
-</div>
+
+{% block title %}Tableau de Bord - Super Administrateur{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('super_admin.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('super_admin.liste_utilisateurs') }}">
+        <i class="bi bi-people"></i> Utilisateurs
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('super_admin.audit') }}">
+        <i class="bi bi-shield-check"></i> Audit
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('super_admin.configuration') }}">
+        <i class="bi bi-gear"></i> Configuration
+    </a>
+</li>
 {% endblock %}
 
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-shield-fill text-danger"></i> Super Administrateur
+            </h1>
+            <p class="text-muted">Gouvernance Système - Niveau 5</p>
+        </div>
+    </div>
+    
+    <!-- Statistiques Principales -->
+    <div class="row g-4 mb-4">
+        {% for role_stat in stats_roles %}
+        <div class="col-md-3">
+            <div class="card stat-card">
+                <div class="stat-value">{{ role_stat[1] }}</div>
+                <div class="stat-label">{{ role_stat[0] }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Activité Système -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card stat-card stat-success">
+                <div class="stat-value">{{ connexions_24h }}</div>
+                <div class="stat-label">Connexions 24h</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card stat-warning">
+                <div class="stat-value">{{ stats_audit.total_actions }}</div>
+                <div class="stat-label">Actions Totales</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card stat-card">
+                <div class="stat-value">{{ stats_audit.actions_par_type|length }}</div>
+                <div class="stat-label">Types d'Actions</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions Récentes -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-activity"></i> Actions Principales
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for action_stat in stats_audit.actions_par_type[:5] %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ action_stat.action }}
+                            <span class="badge bg-primary rounded-pill">{{ action_stat.count }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-trophy"></i> Utilisateurs Actifs
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for user_stat in stats_audit.utilisateurs_actifs[:5] %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            Utilisateur #{{ user_stat.id_user }}
+                            <span class="badge bg-gold rounded-pill">{{ user_stat.count }} actions</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions Rapides -->
+    <div class="row mt-4">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning-fill"></i> Actions Rapides
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2 d-md-flex">
+                        <a href="{{ url_for('super_admin.nouvel_utilisateur') }}" class="btn btn-primary">
+                            <i class="bi bi-person-plus"></i> Nouvel Utilisateur
+                        </a>
+                        <a href="{{ url_for('super_admin.audit') }}" class="btn btn-outline-primary">
+                            <i class="bi bi-journal-text"></i> Consulter Logs
+                        </a>
+                        <a href="{{ url_for('super_admin.configuration') }}" class="btn btn-outline-secondary">
+                            <i class="bi bi-sliders"></i> Configuration
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

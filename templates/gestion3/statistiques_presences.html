@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiques Présences - Gestion 3{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion3.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion3.marquer_presences') }}">
+        <i class="bi bi-check2-square"></i> Marquer Présences
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion3.statistiques_presences') }}">
+        <i class="bi bi-graph-up"></i> Statistiques
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-graph-up"></i> Statistiques de Présence
+            </h1>
+            <p class="text-muted">Analyse par filière</p>
+        </div>
+    </div>
+    
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Filière</label>
+                    <select name="filiere_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">Sélectionner une filière...</option>
+                        {% for filiere in filieres %}
+                        <option value="{{ filiere.id_filiere }}" {% if filiere.id_filiere == filiere_id %}selected{% endif %}>
+                            {{ filiere.nom_filiere }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Résultats -->
+    <div class="card">
+        <div class="card-body">
+            {% if statistiques %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Étudiant</th>
+                            <th>Total Séances</th>
+                            <th>Présent</th>
+                            <th>Absent</th>
+                            <th>Retard</th>
+                            <th>Taux Présence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in statistiques %}
+                        <tr>
+                            <td><strong>{{ stat.nom_complet }}</strong></td>
+                            <td>{{ stat.total_seances }}</td>
+                            <td><span class="badge bg-success">{{ stat.presents }}</span></td>
+                            <td><span class="badge bg-danger">{{ stat.absents }}</span></td>
+                            <td><span class="badge bg-warning">{{ stat.retards }}</span></td>
+                            <td>
+                                {% if stat.taux_presence >= 75 %}
+                                <span class="badge bg-success">{{ "%.1f"|format(stat.taux_presence) }}%</span>
+                                {% else %}
+                                <span class="badge bg-danger">{{ "%.1f"|format(stat.taux_presence) }}%</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-bar-chart display-1 text-muted"></i>
+                <p class="text-muted mt-3">Sélectionnez une filière pour voir les statistiques</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

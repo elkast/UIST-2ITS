@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Feuille de Présence - Gestion 3{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion3.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion3.marquer_presences') }}">
+        <i class="bi bi-check2-square"></i> Marquer Présences
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-clipboard-check"></i> Feuille de Présence
+            </h1>
+            <p class="text-muted">
+                {{ cours.libelle }} - {{ creneau.jour }} 
+                {{ creneau.heure_debut.strftime('%H:%M') }}-{{ creneau.heure_fin.strftime('%H:%M') }}
+            </p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <input type="hidden" name="id_edt" value="{{ creneau.id_edt }}">
+                
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Matricule</th>
+                                <th>Nom Complet</th>
+                                <th class="text-center">Présent</th>
+                                <th class="text-center">Absent</th>
+                                <th class="text-center">Retard</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for etudiant_info in etudiants %}
+                            <tr>
+                                <td><code>{{ etudiant_info.user.matricule }}</code></td>
+                                <td><strong>{{ etudiant_info.user.prenom }} {{ etudiant_info.user.nom }}</strong></td>
+                                <td class="text-center">
+                                    <input type="radio" name="statut_{{ etudiant_info.etudiant.id_etudiant }}" 
+                                           value="Present" class="form-check-input" checked>
+                                </td>
+                                <td class="text-center">
+                                    <input type="radio" name="statut_{{ etudiant_info.etudiant.id_etudiant }}" 
+                                           value="Absent" class="form-check-input">
+                                </td>
+                                <td class="text-center">
+                                    <input type="radio" name="statut_{{ etudiant_info.etudiant.id_etudiant }}" 
+                                           value="Retard" class="form-check-input">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                    <a href="{{ url_for('gestion3.marquer_presences') }}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Enregistrer les Présences
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Nouvelle Salle - Gestion 1{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion1.liste_salles') }}">
+        <i class="bi bi-building"></i> Salles
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.liste_filieres') }}">
+        <i class="bi bi-diagram-3"></i> Filières
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.liste_cours') }}">
+        <i class="bi bi-book"></i> Cours
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-plus-circle"></i> Nouvelle Salle
+            </h1>
+            <p class="text-muted">Ajouter une nouvelle salle</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-building"></i> Informations Salle
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="nom_salle" class="form-label">Nom de la Salle *</label>
+                            <input type="text" class="form-control" id="nom_salle" name="nom_salle" 
+                                   placeholder="Ex: Amphi A, Salle 101" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="capacite" class="form-label">Capacité *</label>
+                                    <input type="number" class="form-control" id="capacite" name="capacite" 
+                                           placeholder="Ex: 50" min="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="batiment" class="form-label">Bâtiment *</label>
+                                    <input type="text" class="form-control" id="batiment" name="batiment" 
+                                           placeholder="Ex: Bâtiment A" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="equipements" class="form-label">Équipements</label>
+                            <textarea class="form-control" id="equipements" name="equipements" rows="3"
+                                      placeholder="Ex: Projecteur, Tableau interactif, Climatisation"></textarea>
+                            <small class="text-muted">Séparez les équipements par des virgules</small>
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{{ url_for('gestion1.liste_salles') }}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Annuler
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Créer la Salle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

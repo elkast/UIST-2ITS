@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Emploi du Temps - Parent{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('parent.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="#">
+        <i class="bi bi-calendar-week"></i> EDT de {{ infos.user.prenom }}
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('parent.notifications') }}">
+        <i class="bi bi-bell"></i> Notifications
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-calendar-week text-primary"></i> Emploi du Temps
+            </h1>
+            <p class="text-muted">
+                {{ infos.user.prenom }} {{ infos.user.nom }} - 
+                <span class="badge bg-primary">{{ infos.filiere.code_filiere }}</span>
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('parent.dashboard') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Retour
+            </a>
+        </div>
+    </div>
+    
+    <!-- Navigation Semaines -->
+    <div class="mb-4">
+        <a href="{{ url_for('parent.edt_enfant', etudiant_id=infos.etudiant.id_etudiant, semaine=semaine-1) }}" 
+           class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Semaine {{ semaine-1 }}
+        </a>
+        <span class="mx-3 fw-bold">Semaine {{ semaine }}</span>
+        <a href="{{ url_for('parent.edt_enfant', etudiant_id=infos.etudiant.id_etudiant, semaine=semaine+1) }}" 
+           class="btn btn-outline-secondary">
+            Semaine {{ semaine+1 }} <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+    
+    <!-- EDT -->
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-calendar3"></i> Planning de la Semaine {{ semaine }}
+        </div>
+        <div class="card-body">
+            {% if creneaux %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Jour</th>
+                            <th>Horaire</th>
+                            <th>Cours</th>
+                            <th>Enseignant</th>
+                            <th>Salle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for creneau in creneaux %}
+                        <tr>
+                            <td><strong class="text-primary">{{ creneau.jour }}</strong></td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    <i class="bi bi-clock"></i> 
+                                    {{ creneau.heure_debut.strftime('%H:%M') }} - {{ creneau.heure_fin.strftime('%H:%M') }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong>{{ creneau.cours.libelle if hasattr(creneau, 'cours') else '-' }}</strong><br>
+                                <small class="text-muted">{{ creneau.cours.code_cours if hasattr(creneau, 'cours') else '-' }}</small>
+                            </td>
+                            <td>
+                                <i class="bi bi-person-badge"></i> 
+                                {{ creneau.enseignant.user.prenom if hasattr(creneau, 'enseignant') else '-' }} 
+                                {{ creneau.enseignant.user.nom if hasattr(creneau, 'enseignant') else '-' }}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-building"></i> {{ creneau.salle.nom_salle if hasattr(creneau, 'salle') else '-' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="mt-3 p-3 bg-light rounded">
+                <p class="mb-0">
+                    <strong><i class="bi bi-info-circle"></i> Information:</strong> 
+                    Total de {{ creneaux|length }} cours cette semaine
+                </p>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Aucun cours cette semaine</h5>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

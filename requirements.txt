@@ -1,8 +1,28 @@
-Flask==2.3.3
+# UIST-Planify - Dépendances Python
+# Flask et extensions
+Flask==3.0.0
+Flask-SQLAlchemy==3.1.1
+Flask-Migrate==4.0.5
 Flask-Login==0.6.3
-Flask-WTF==1.1.1
-mysql-connector-python==8.0.33
+Flask-WTF==1.2.1
+WTForms==3.1.1
+
+# Base de données
+SQLAlchemy==2.0.23
+psycopg2-binary==2.9.9  # PostgreSQL
+PyMySQL==1.1.0  # MySQL
+
+# Sécurité
+PyJWT==2.8.0
+Werkzeug==3.0.1
 python-dotenv==1.0.0
-reportlab
-openpyxl
-werkzeug
+
+# Génération de documents
+reportlab==4.0.7
+openpyxl==3.1.2
+
+# Utilitaires
+python-dateutil==2.8.2
+
+# Tâches planifiées
+APScheduler==3.10.4

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block title %}Emploi du Temps - Gestion 1{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.liste_salles') }}">
+        <i class="bi bi-building"></i> Salles
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.liste_filieres') }}">
+        <i class="bi bi-diagram-3"></i> Filières
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion1.liste_cours') }}">
+        <i class="bi bi-book"></i> Cours
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion1.emploi_temps') }}">
+        <i class="bi bi-calendar-week"></i> EDT
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="fw-bold">
+                <i class="bi bi-calendar-week"></i> Emploi du Temps
+            </h1>
+            <p class="text-muted">Semaine {{ semaine }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{{ url_for('gestion1.nouveau_creneau') }}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Nouveau Créneau
+            </a>
+        </div>
+    </div>
+    
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Filière</label>
+                    <select name="filiere_id" class="form-select" onchange="this.form.submit()">
+                        <option value="">Toutes les filières</option>
+                        {% for filiere in filieres %}
+                        <option value="{{ filiere.id_filiere }}">{{ filiere.nom_filiere }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Semaine</label>
+                    <input type="number" name="semaine" class="form-control" value="{{ semaine }}" min="1" max="52">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Tableau EDT -->
+    <div class="card">
+        <div class="card-body">
+            {% if creneaux %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Jour</th>
+                            <th>Horaire</th>
+                            <th>Cours</th>
+                            <th>Enseignant</th>
+                            <th>Salle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for creneau in creneaux %}
+                        <tr>
+                            <td><strong>{{ creneau.jour }}</strong></td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ creneau.heure_debut.strftime('%H:%M') }} - {{ creneau.heure_fin.strftime('%H:%M') }}
+                                </span>
+                            </td>
+                            <td>{{ creneau.cours.libelle if creneau.cours else '-' }}</td>
+                            <td>{{ creneau.enseignant_nom if hasattr(creneau, 'enseignant_nom') else '-' }}</td>
+                            <td>{{ creneau.salle.nom_salle if creneau.salle else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x display-1 text-muted"></i>
+                <p class="text-muted mt-3">Aucun créneau pour cette semaine</p>
+                <a href="{{ url_for('gestion1.nouveau_creneau') }}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Ajouter un Créneau
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

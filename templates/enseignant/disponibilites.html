@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Disponibilités - Enseignant{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.emploi_temps') }}">
+        <i class="bi bi-calendar-week"></i> Mon EDT
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('enseignant.disponibilites') }}">
+        <i class="bi bi-clock"></i> Disponibilités
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.saisir_notes') }}">
+        <i class="bi bi-pencil-square"></i> Saisir Notes
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-clock"></i> Mes Disponibilités
+            </h1>
+            <p class="text-muted">Déclarer vos indisponibilités</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Formulaire -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-plus-circle"></i> Déclarer une Indisponibilité
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="jour" class="form-label">Jour *</label>
+                            <select class="form-select" id="jour" name="jour" required>
+                                {% for jour in jours %}
+                                <option value="{{ jour }}">{{ jour }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="heure_debut" class="form-label">Heure Début *</label>
+                                    <input type="time" class="form-control" id="heure_debut" name="heure_debut" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="heure_fin" class="form-label">Heure Fin *</label>
+                                    <input type="time" class="form-control" id="heure_fin" name="heure_fin" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Déclarez vos indisponibilités pour éviter les conflits lors de la planification
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-save"></i> Enregistrer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Liste des indisponibilités -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-list"></i> Mes Indisponibilités
+                </div>
+                <div class="card-body">
+                    {% if disponibilites %}
+                    <div class="list-group">
+                        {% for dispo in disponibilites %}
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ dispo.jour }}</h6>
+                                    <small class="text-muted">
+                                        {{ dispo.heure_debut.strftime('%H:%M') }} - {{ dispo.heure_fin.strftime('%H:%M') }}
+                                    </small>
+                                </div>
+                                <span class="badge bg-warning">Indisponible</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-center text-muted">Aucune indisponibilité déclarée</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

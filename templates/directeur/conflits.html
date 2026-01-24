@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block title %}Conflits EDT - Directeur{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('directeur.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('directeur.validation_notes') }}">
+        <i class="bi bi-clipboard-check"></i> Validation Notes
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('directeur.conflits_edt') }}">
+        <i class="bi bi-exclamation-diamond"></i> Conflits EDT
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('directeur.rapports_pedagogiques') }}">
+        <i class="bi bi-file-earmark-bar-graph"></i> Rapports
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-exclamation-diamond text-danger"></i> Conflits d'Emploi du Temps
+            </h1>
+            <p class="text-muted">Détection et résolution des conflits - Semaine {{ semaine }}</p>
+        </div>
+    </div>
+    
+    <!-- Filtres -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Semaine</label>
+                    <input type="number" name="semaine" class="form-control" value="{{ semaine }}" min="1" max="52">
+                </div>
+                <div class="col-md-4 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Analyser
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Résultats -->
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <i class="bi bi-exclamation-triangle"></i> Conflits Détectés
+        </div>
+        <div class="card-body">
+            {% if conflits %}
+            <div class="alert alert-danger">
+                <strong>{{ conflits|length }} conflit(s) détecté(s)</strong>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Type Conflit</th>
+                            <th>Détails</th>
+                            <th>Jour</th>
+                            <th>Horaire</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for conflit in conflits %}
+                        <tr>
+                            <td><span class="badge bg-danger">{{ conflit.type }}</span></td>
+                            <td>{{ conflit.details }}</td>
+                            <td>{{ conflit.jour }}</td>
+                            <td>{{ conflit.horaire }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-check-circle display-1 text-success"></i>
+                <p class="text-muted mt-3">Aucun conflit détecté pour cette semaine</p>
+                <p class="text-muted">L'emploi du temps est cohérent</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- EDT Semaine -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-calendar-week"></i> Créneaux de la Semaine
+                </div>
+                <div class="card-body">
+                    {% if creneaux %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Jour</th>
+                                    <th>Horaire</th>
+                                    <th>Cours</th>
+                                    <th>Salle</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for creneau in creneaux %}
+                                <tr>
+                                    <td>{{ creneau.jour }}</td>
+                                    <td>{{ creneau.heure_debut.strftime('%H:%M') }}-{{ creneau.heure_fin.strftime('%H:%M') }}</td>
+                                    <td>{{ creneau.cours.libelle if hasattr(creneau, 'cours') else '-' }}</td>
+                                    <td>{{ creneau.salle.nom_salle if hasattr(creneau, 'salle') else '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-center text-muted mb-0">Aucun créneau pour cette semaine</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

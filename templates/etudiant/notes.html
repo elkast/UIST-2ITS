@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Notes - Étudiant{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.emploi_temps') }}">
+        <i class="bi bi-calendar-week"></i> Mon EDT
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('etudiant.mes_notes') }}">
+        <i class="bi bi-file-earmark-text"></i> Mes Notes
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.mes_bulletins') }}">
+        <i class="bi bi-folder-check"></i> Mes Bulletins
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.profil') }}">
+        <i class="bi bi-person"></i> Mon Profil
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-file-earmark-text text-success"></i> Mes Notes
+            </h1>
+            <p class="text-muted">Relevé de notes validées - Année Académique 2025-2026</p>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center bg-light">
+                <div class="card-body">
+                    <h6 class="text-muted mb-1">Moyenne Générale</h6>
+                    <h2 class="fw-bold text-primary mb-0">
+                        {{ moyenne|format_note if moyenne else '-' }}/20
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tableau des Notes -->
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-list-check"></i> Liste de Mes Notes
+        </div>
+        <div class="card-body">
+            {% if notes %}
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Cours</th>
+                            <th>Code</th>
+                            <th>Type Évaluation</th>
+                            <th>Note /20</th>
+                            <th>Coefficient</th>
+                            <th>Date</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in notes %}
+                        <tr>
+                            <td>
+                                <strong>{{ note.cours.libelle if hasattr(note, 'cours') else '-' }}</strong>
+                            </td>
+                            <td>
+                                <code>{{ note.cours.code_cours if hasattr(note, 'cours') else '-' }}</code>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{ note.type_evaluation }}</span>
+                            </td>
+                            <td>
+                                {% if note.note_sur_20 >= 10 %}
+                                <strong class="text-success fs-5">{{ note.note_sur_20|format_note }}</strong>
+                                {% else %}
+                                <strong class="text-danger fs-5">{{ note.note_sur_20|format_note }}</strong>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-info text-dark">{{ note.cours.coefficient if hasattr(note, 'cours') else '1' }}</span>
+                            </td>
+                            <td>
+                                <small>{{ note.date_saisie|format_date if note.date_saisie else '-' }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-{{ note.statut|statut_badge }}">
+                                    {{ note.statut }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Résumé -->
+            <div class="mt-4 p-3 bg-light rounded">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6 class="fw-bold"><i class="bi bi-bar-chart"></i> Statistiques</h6>
+                        <p class="mb-1">
+                            <strong>Total notes:</strong> {{ notes|length }}<br>
+                            <strong>Notes ≥ 10:</strong> {{ notes|selectattr('note_sur_20', 'ge', 10)|list|length }}<br>
+                            <strong>Notes < 10:</strong> {{ notes|selectattr('note_sur_20', 'lt', 10)|list|length }}
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="fw-bold"><i class="bi bi-trophy"></i> Performance</h6>
+                        <p class="mb-1">
+                            <strong>Meilleure note:</strong> {{ notes|map(attribute='note_sur_20')|max|format_note if notes else '-' }}/20<br>
+                            <strong>Note la plus basse:</strong> {{ notes|map(attribute='note_sur_20')|min|format_note if notes else '-' }}/20
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="fw-bold"><i class="bi bi-info-circle"></i> Information</h6>
+                        <p class="text-muted small mb-0">
+                            Seules les notes validées par le directeur sont affichées ici.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-inbox display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Aucune note disponible</h5>
+                <p class="text-muted">Vos notes apparaîtront ici une fois qu'elles seront validées</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

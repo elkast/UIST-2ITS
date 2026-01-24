@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Saisie Notes - Enseignant{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.emploi_temps') }}">
+        <i class="bi bi-calendar-week"></i> Mon EDT
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('enseignant.saisir_notes') }}">
+        <i class="bi bi-pencil-square"></i> Saisir Notes
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('enseignant.historique_notes') }}">
+        <i class="bi bi-clock-history"></i> Historique
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-pencil-square"></i> Saisie de Notes
+            </h1>
+            <p class="text-muted">Enregistrer les notes de vos étudiants</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-clipboard-data"></i> Formulaire de Saisie
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="id_cours" class="form-label">Cours *</label>
+                            <select class="form-select" id="id_cours" name="id_cours" required>
+                                <option value="">Sélectionner un cours...</option>
+                                {% for cours in mes_cours %}
+                                <option value="{{ cours.id_cours }}">
+                                    {{ cours.libelle }} ({{ cours.code_cours }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <small class="text-muted">Seuls vos cours assignés sont affichés</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="matricule" class="form-label">Matricule Étudiant *</label>
+                            <input type="text" class="form-control" id="matricule" name="matricule" 
+                                   placeholder="UIST-2025-E-00001" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="valeur_note" class="form-label">Note (sur 20) *</label>
+                                    <input type="number" class="form-control" id="valeur_note" name="valeur_note" 
+                                           step="0.01" min="0" max="20" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="type_evaluation" class="form-label">Type Évaluation *</label>
+                                    <select class="form-select" id="type_evaluation" name="type_evaluation" required>
+                                        {% for type_eval in types_eval %}
+                                        <option value="{{ type_eval }}">{{ type_eval }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i> Les notes nécessiteront une validation par le Directeur
+                        </div>
+                        
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-secondary">
+                                <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

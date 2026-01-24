@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Configuration - Super Admin{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('super_admin.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('super_admin.liste_utilisateurs') }}">
+        <i class="bi bi-people"></i> Utilisateurs
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('super_admin.audit') }}">
+        <i class="bi bi-shield-check"></i> Audit
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('super_admin.configuration') }}">
+        <i class="bi bi-gear"></i> Configuration
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-gear text-secondary"></i> Configuration Système
+            </h1>
+            <p class="text-muted">Paramètres globaux de l'application</p>
+        </div>
+    </div>
+    
+    <!-- Paramètres Académiques -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-calendar-check"></i> Paramètres Académiques
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label">Année Académique</label>
+                            <input type="text" class="form-control" value="{{ config.ANNEE_ACADEMIQUE }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Items par Page</label>
+                            <input type="number" class="form-control" value="{{ config.ITEMS_PER_PAGE }}" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-primary" disabled>
+                            <i class="bi bi-save"></i> Sauvegarder
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-database"></i> Base de Données
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Type de Base</label>
+                        <input type="text" class="form-control" value="{{ config.SQLALCHEMY_DATABASE_URI.split(':')[0] }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Environnement</label>
+                        <span class="badge bg-success">
+                            {% if config.DEBUG %}Development{% else %}Production{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Charte Graphique -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-palette"></i> Charte Graphique
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        {% for nom, couleur in config.COULEURS.items() %}
+                        <div class="col-md-2">
+                            <div class="text-center">
+                                <div style="width: 100%; height: 60px; background-color: {{ couleur }}; border-radius: 0.5rem; border: 1px solid #dee2e6;"></div>
+                                <p class="mt-2 mb-0 fw-bold">{{ nom|capitalize }}</p>
+                                <small class="text-muted">{{ couleur }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Actions Système -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning"></i> Actions Système
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> Les actions ci-dessous doivent être effectuées avec précaution
+                    </div>
+                    <div class="d-grid gap-2 d-md-flex">
+                        <button class="btn btn-outline-warning" disabled>
+                            <i class="bi bi-arrow-clockwise"></i> Recalculer Toutes les Moyennes
+                        </button>
+                        <button class="btn btn-outline-danger" disabled>
+                            <i class="bi bi-trash"></i> Purger Logs Audit (>30j)
+                        </button>
+                        <button class="btn btn-outline-info" disabled>
+                            <i class="bi bi-download"></i> Backup Base de Données
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

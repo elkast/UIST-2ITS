@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Mon Emploi du Temps - Étudiant{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('etudiant.emploi_temps') }}">
+        <i class="bi bi-calendar-week"></i> Mon EDT
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.mes_notes') }}">
+        <i class="bi bi-file-earmark-text"></i> Mes Notes
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.mes_bulletins') }}">
+        <i class="bi bi-folder-check"></i> Mes Bulletins
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.profil') }}">
+        <i class="bi bi-person"></i> Mon Profil
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-calendar-week text-primary"></i> Mon Emploi du Temps
+            </h1>
+            <p class="text-muted">Semaine {{ semaine }} - Année Académique 2025-2026</p>
+        </div>
+    </div>
+    
+    <!-- Navigation Semaines -->
+    <div class="mb-4">
+        <a href="{{ url_for('etudiant.emploi_temps', semaine=semaine-1) }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Semaine Précédente
+        </a>
+        <span class="mx-3 fw-bold">Semaine {{ semaine }}</span>
+        <a href="{{ url_for('etudiant.emploi_temps', semaine=semaine+1) }}" class="btn btn-outline-secondary">
+            Semaine Suivante <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+    
+    <!-- Emploi du Temps -->
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-calendar3"></i> Planning Hebdomadaire
+        </div>
+        <div class="card-body">
+            {% if creneaux %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th width="15%">Jour</th>
+                            <th width="20%">Horaire</th>
+                            <th width="35%">Cours</th>
+                            <th width="20%">Enseignant</th>
+                            <th width="10%">Salle</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for creneau in creneaux %}
+                        <tr>
+                            <td><strong class="text-primary">{{ creneau.jour }}</strong></td>
+                            <td>
+                                <span class="badge bg-info text-dark">
+                                    <i class="bi bi-clock"></i> 
+                                    {{ creneau.heure_debut.strftime('%H:%M') }} - {{ creneau.heure_fin.strftime('%H:%M') }}
+                                </span>
+                            </td>
+                            <td>
+                                <strong>{{ creneau.cours.libelle if hasattr(creneau, 'cours') else '-' }}</strong><br>
+                                <small class="text-muted">
+                                    <i class="bi bi-tag"></i> {{ creneau.cours.code_cours if hasattr(creneau, 'cours') else '-' }}
+                                </small>
+                            </td>
+                            <td>
+                                <i class="bi bi-person-badge"></i> 
+                                {{ creneau.enseignant.user.prenom if hasattr(creneau, 'enseignant') else '-' }} 
+                                {{ creneau.enseignant.user.nom if hasattr(creneau, 'enseignant') else '-' }}
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">
+                                    <i class="bi bi-building"></i> {{ creneau.salle.nom_salle if hasattr(creneau, 'salle') else '-' }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Légende -->
+            <div class="mt-3 p-3 bg-light rounded">
+                <h6 class="fw-bold mb-2"><i class="bi bi-info-circle"></i> Informations</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <small><strong>Total cours cette semaine:</strong> {{ creneaux|length }}</small>
+                    </div>
+                    <div class="col-md-6">
+                        <small class="text-muted">
+                            <i class="bi bi-lightbulb"></i> Consultez votre EDT régulièrement pour les mises à jour
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x display-1 text-muted"></i>
+                <h5 class="mt-3 text-muted">Aucun cours programmé cette semaine</h5>
+                <p class="text-muted">Profitez-en pour réviser ou contactez votre administration</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

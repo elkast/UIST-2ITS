@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Marquer Présences - Gestion 3{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion3.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion3.marquer_presences') }}">
+        <i class="bi bi-check2-square"></i> Marquer Présences
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion3.statistiques_presences') }}">
+        <i class="bi bi-graph-up"></i> Statistiques
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-check2-square"></i> Marquer les Présences
+            </h1>
+            <p class="text-muted">Sélectionnez un créneau de cours</p>
+        </div>
+    </div>
+    
+    <!-- Liste des créneaux -->
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-calendar-week"></i> Créneaux Disponibles
+        </div>
+        <div class="card-body">
+            {% if creneaux %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Jour</th>
+                            <th>Horaire</th>
+                            <th>Cours</th>
+                            <th>Salle</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for creneau in creneaux %}
+                        <tr>
+                            <td><strong>{{ creneau.jour }}</strong></td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ creneau.heure_debut.strftime('%H:%M') }} - {{ creneau.heure_fin.strftime('%H:%M') }}
+                                </span>
+                            </td>
+                            <td>{{ creneau.cours.libelle if hasattr(creneau, 'cours') else '-' }}</td>
+                            <td>{{ creneau.salle.nom_salle if hasattr(creneau, 'salle') else '-' }}</td>
+                            <td>
+                                <a href="{{ url_for('gestion3.presences_creneau', edt_id=creneau.id_edt) }}" 
+                                   class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i> Marquer
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5">
+                <i class="bi bi-calendar-x display-1 text-muted"></i>
+                <p class="text-muted mt-3">Aucun créneau disponible</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

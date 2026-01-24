@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Génération Bulletins - Gestion 2{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion2.liste_etudiants') }}">
+        <i class="bi bi-people"></i> Étudiants
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion2.generer_bulletins') }}">
+        <i class="bi bi-file-earmark-text"></i> Bulletins
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-file-earmark-text"></i> Génération de Bulletins
+            </h1>
+            <p class="text-muted">Génération en masse par filière</p>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-gear"></i> Paramètres de Génération
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="id_filiere" class="form-label">Filière *</label>
+                            <select class="form-select" id="id_filiere" name="id_filiere" required>
+                                <option value="">Sélectionner une filière...</option>
+                                {% for filiere in filieres %}
+                                <option value="{{ filiere.id_filiere }}">
+                                    {{ filiere.nom_filiere }} ({{ filiere.code_filiere }})
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="annee_academique" class="form-label">Année Académique *</label>
+                                    <input type="text" class="form-control" id="annee_academique" name="annee_academique" 
+                                           value="2025-2026" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="semestre" class="form-label">Semestre *</label>
+                                    <select class="form-select" id="semestre" name="semestre" required>
+                                        <option value="Semestre 1">Semestre 1</option>
+                                        <option value="Semestre 2">Semestre 2</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i> Les bulletins seront générés au format PDF pour tous les étudiants de la filière sélectionnée
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-file-earmark-pdf"></i> Générer les Bulletins
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

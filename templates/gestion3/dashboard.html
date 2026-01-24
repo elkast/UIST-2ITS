@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord - Gestion 3{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('gestion3.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion3.marquer_presences') }}">
+        <i class="bi bi-check2-square"></i> Marquer Présences
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion3.statistiques_presences') }}">
+        <i class="bi bi-graph-up"></i> Statistiques
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('gestion3.alertes') }}">
+        <i class="bi bi-exclamation-triangle"></i> Alertes
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-clipboard-check text-warning"></i> Gestion 3
+            </h1>
+            <p class="text-muted">Pôle Suivi & Contrôle des Présences</p>
+        </div>
+    </div>
+    
+    <!-- Alertes Critiques -->
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <i class="bi bi-exclamation-triangle"></i> Alertes Assiduité Critique (< 75%)
+        </div>
+        <div class="card-body">
+            {% if alertes_presences %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Étudiant</th>
+                            <th>Filière</th>
+                            <th>Taux Présence</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for alerte in alertes_presences %}
+                        <tr>
+                            <td><strong>{{ alerte.user.prenom }} {{ alerte.user.nom }}</strong></td>
+                            <td>
+                                <span class="badge bg-primary">{{ alerte.filiere.code_filiere }}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-danger">{{ "%.1f"|format(alerte.taux_presence) }}%</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning">Critique</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-4">
+                <i class="bi bi-check-circle display-4 text-success"></i>
+                <p class="text-muted mt-3">Aucune alerte d'assiduité</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Actions Rapides -->
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <i class="bi bi-lightning-fill"></i> Actions Rapides
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <a href="{{ url_for('gestion3.marquer_presences') }}" class="btn btn-success w-100">
+                                <i class="bi bi-check2-square"></i> Marquer Présences
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('gestion3.statistiques_presences') }}" class="btn btn-info w-100">
+                                <i class="bi bi-graph-up"></i> Voir Statistiques
+                            </a>
+                        </div>
+                        <div class="col-md-4">
+                            <a href="{{ url_for('gestion3.alertes') }}" class="btn btn-warning w-100">
+                                <i class="bi bi-exclamation-triangle"></i> Toutes les Alertes
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

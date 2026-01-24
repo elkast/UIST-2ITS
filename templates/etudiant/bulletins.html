@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Mes Bulletins - Étudiant{% endblock %}
+
+{% block nav_links %}
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.dashboard') }}">
+        <i class="bi bi-speedometer2"></i> Tableau de Bord
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.emploi_temps') }}">
+        <i class="bi bi-calendar-week"></i> Mon EDT
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.mes_notes') }}">
+        <i class="bi bi-file-earmark-text"></i> Mes Notes
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link active" href="{{ url_for('etudiant.mes_bulletins') }}">
+        <i class="bi bi-folder-check"></i> Mes Bulletins
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link" href="{{ url_for('etudiant.profil') }}">
+        <i class="bi bi-person"></i> Mon Profil
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-5 fw-bold">
+                <i class="bi bi-folder-check text-warning"></i> Mes Bulletins
+            </h1>
+            <p class="text-muted">Bulletins de notes et relevés académiques</p>
+        </div>
+    </div>
+    
+    <!-- Liste des Bulletins -->
+    <div class="row">
+        {% if bulletins %}
+            {% for bulletin in bulletins %}
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">
+                            <i class="bi bi-file-earmark-pdf"></i> 
+                            Bulletin {{ bulletin.annee_academique }} - {{ bulletin.semestre }}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Informations du Bulletin -->
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">Date Génération</small>
+                                <p class="fw-bold mb-0">{{ bulletin.date_generation|format_date if bulletin.date_generation else '-' }}</p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Moyenne</small>
+                                <p class="fw-bold mb-0 text-primary fs-4">
+                                    {{ bulletin.moyenne_generale|format_note if bulletin.moyenne_generale else '-' }}/20
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <small class="text-muted">Rang</small>
+                                <p class="fw-bold mb-0">
+                                    <i class="bi bi-trophy"></i> {{ bulletin.rang if bulletin.rang else '-' }}
+                                </p>
+                            </div>
+                            <div class="col-6">
+                                <small class="text-muted">Statut</small>
+                                <p class="mb-0">
+                                    {% if bulletin.moyenne_generale and bulletin.moyenne_generale >= 10 %}
+                                    <span class="badge bg-success">Admis</span>
+                                    {% elif bulletin.moyenne_generale %}
+                                    <span class="badge bg-danger">Ajournement</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">En cours</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Observations -->
+                        {% if bulletin.observations %}
+                        <div class="alert alert-info">
+                            <small><strong>Observations:</strong></small><br>
+                            <small>{{ bulletin.observations }}</small>
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Actions -->
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" disabled>
+                                <i class="bi bi-eye"></i> Consulter
+                            </button>
+                            <button class="btn btn-outline-secondary" disabled>
+                                <i class="bi bi-download"></i> Télécharger PDF
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-footer text-muted">
+                        <small>
+                            <i class="bi bi-calendar"></i> 
+                            Généré le {{ bulletin.date_generation|format_date if bulletin.date_generation else '-' }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-folder-x display-1 text-muted"></i>
+                    <h5 class="mt-3 text-muted">Aucun bulletin disponible</h5>
+                    <p class="text-muted">
+                        Vos bulletins seront générés à la fin de chaque semestre<br>
+                        et apparaîtront ici automatiquement
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Informations Complémentaires -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <h6 class="fw-bold mb-3"><i class="bi bi-info-circle"></i> À Propos des Bulletins</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="small mb-0">
+                                <i class="bi bi-check-circle text-success"></i> 
+                                <strong>Génération automatique</strong><br>
+                                Les bulletins sont générés à la fin de chaque semestre
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="small mb-0">
+                                <i class="bi bi-check-circle text-success"></i> 
+                                <strong>Validation officielle</strong><br>
+                                Tous les bulletins sont validés par la direction
+                            </p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="small mb-0">
+                                <i class="bi bi-check-circle text-success"></i> 
+                                <strong>Format PDF</strong><br>
+                                Téléchargement disponible en format PDF officiel
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
