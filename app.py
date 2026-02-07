@@ -43,8 +43,8 @@ def create_app(config_name=None):
     # Route d'accueil
     @app.route('/')
     def index():
-        """Page d'accueil - Redirection vers login"""
-        return redirect(url_for('auth.login'))
+        """Page d'accueil - Landing page promotionnelle"""
+        return render_template('landing.html')
 
     return app
 

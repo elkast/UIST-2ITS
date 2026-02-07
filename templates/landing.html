@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - UIST{% endblock %}
+
+{% block extra_css %}
+<!-- AOS CSS -->
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+{% endblock %}
+
+
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section bg-primary-uist text-white py-5" data-aos="fade-in">
+    <nav>
+
+    </nav>
+    
+    <div class="container-fluid px-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6" data-aos="fade-right">
+                <h1 class="display-4 fw-bold mb-4" style="color:white;">BIENVENUE À<br>L'UNIVERSITÉ INTERNATIONALE DES SCIENCES ET TECHNOLOGIES (UIST)</h1>
+                <p class="lead mb-4">
+                    Nous formons les élites de demain. Découvrez nos programmes en économie, droit et technologies numériques à Cocody, Abidjan.
+                </p>
+                <a href="#offres" class="btn btn-gold btn-lg me-3">
+                    <i class="bi bi-eye"></i> Découvrir nos offres
+                </a>
+                <a href="#contact" class="btn btn-outline-light btn-lg">
+                    <i class="bi bi-envelope"></i> Nous contacter
+                </a>
+            </div>
+            <div class="col-lg-6 text-center" data-aos="fade-left">
+                <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="UIST Logo" class="img-fluid" style="max-width: 300px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="mb-4 text-primary-uist">À propos de nous</h2>
+                <p class="lead mb-4">
+                    L'Université Internationale des Sciences et Technologies (UIST), située à Cocody (Abidjan), propose une offre académique diversifiée axée sur les métiers de l'économie, du droit et des technologies numériques.
+                </p>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-book-half text-gold fs-1 mb-3"></i>
+                                <h5 class="card-title">Système LMD</h5>
+                                <p class="card-text">Le cursus LMD (Licence Master Doctorat) parfait, axé sur le résultat et l'insertion socio-professionnelle.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-wifi text-gold fs-1 mb-3"></i>
+                                <h5 class="card-title">Wifi accessible</h5>
+                                <p class="card-text">Le réseau WIFI est accessible aux étudiants, enseignants, personnels et visiteurs.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card h-100 border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-book text-gold fs-1 mb-3"></i>
+                                <h5 class="card-title">Librairie virtuelle</h5>
+                                <p class="card-text">Une large offre d'ebooks pour répondre à tous vos besoins documentaires.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Offres Section -->
+<section id="offres" class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2 class="text-primary-uist">Ce que nous offrons</h2>
+                <p class="lead">Découvrez les programmes et services qui font de l'UIST une université de choix.</p>
+            </div>
+        </div>
+        {% from 'macros/cards.html' import service_card %}
+        <div class="row g-4">
+            {{ service_card('bi-book', 'Cycles Courts (BTS)', ['Gestion Commerciale', 'Comptabilité Gestion', 'Informatique et Développement d\'Applications']) }}
+            {{ service_card('bi-mortarboard', 'Cycles Universitaires (LMD)', ['Droit privé', 'Sciences économiques de gestion', 'Statistiques et économie appliquée', 'Audit et Contrôle de Gestion (ACG)', 'Sciences informatiques', 'Réseaux et Télécommunications', 'Intelligence Artificielle (IA)', 'Développement d\'applications mobiles']) }}
+            {{ service_card('bi-star', 'Services et Infrastructures', ['Plateforme E-learning', 'Librairie virtuelle accessible', 'Wifi accessible', 'Accompagnement personnalisé', 'Insertion socio-professionnelle']) }}
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5" data-aos="fade-up">
+                <h2 class="text-primary-uist">Témoignages d'anciens étudiants</h2>
+                <p class="lead">Découvrez ce que disent nos anciens étudiants sur leur expérience à l'UIST.</p>
+            </div>
+        </div>
+        {% from 'macros/cards.html' import testimonial_card %}
+        <div class="row g-4">
+            {{ testimonial_card('Jean K.', 'Ingénieur chez Orange CI', '"L\'UIST m\'a donné les compétences techniques et le réseau nécessaires pour réussir dans le monde professionnel."', 'https://via.placeholder.com/80x80?text=JK') }}
+            {{ testimonial_card('Marie T.', 'Développeuse Full-Stack', '"Les projets pratiques et l\'accompagnement personnalisé m\'ont permis de me démarquer sur le marché du travail."', 'https://via.placeholder.com/80x80?text=MT') }}
+            {{ testimonial_card('Ahmed D.', 'Consultant en Management', '"Une université moderne avec des enseignants passionnés qui préparent vraiment aux défis du monde réel."', 'https://via.placeholder.com/80x80?text=AD') }}
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="mb-4 text-primary-uist" data-aos="fade-up">Contactez-nous</h2>
+                <p class="lead mb-4" data-aos="fade-up" data-aos-delay="100">
+                    Prêt à rejoindre notre communauté ? N'hésitez pas à nous contacter pour plus d'informations.
+                </p>
+                <div class="row g-4">
+                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-telephone text-gold fs-1 mb-3"></i>
+                                <h5>Téléphone</h5>
+                                <p>+225 XX XX XX XX XX</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-envelope text-gold fs-1 mb-3"></i>
+                                <h5>Email</h5>
+                                <p>info@uist.edu.ci</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4" data-aos="fade-up" data-aos-delay="400">
+                        <div class="card border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <i class="bi bi-geo-alt text-gold fs-1 mb-3"></i>
+                                <h5>Adresse</h5>
+                                <p>Abidjan, Côte d'Ivoire</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4" data-aos="fade-up" data-aos-delay="500">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-box-arrow-in-right"></i> Se connecter
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<!-- AOS JS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+</script>
+{% endblock %}

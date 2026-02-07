@@ -372,6 +372,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================================================
+   EFFETS DE SURVOL MODERNES
+   ============================================================================ */
+.hover-effect {
+    transition: all 0.3s ease;
+}
+
+.hover-effect:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+}
+
+.btn-gold {
+    background: linear-gradient(45deg, #FFD700, #FDB931);
+    border: none;
+    color: #000;
+    transition: all 0.3s ease;
+}
+
+.btn-gold:hover {
+    background: linear-gradient(45deg, #FDB931, #FFD700);
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+}
+
+/* ============================================================================
    LAZY LOADING - PAGE LOADER
    ============================================================================ */
 .page-loader {

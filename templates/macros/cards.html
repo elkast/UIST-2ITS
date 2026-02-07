@@ -1,0 +1,30 @@
+{% macro service_card(icon, title, items) %}
+<div class="col-lg-4" data-aos="fade-up" >
+    <div class="card h-100 border-0 shadow-sm hover-effect">
+        <div class="card-header bg-white text-primary-uist">
+            <h5 class="mb-0"><i class="{{ icon }}"></i> {{ title }}</h5>
+        </div>
+        <div class="card-body">
+            <ul class="list-unstyled">
+                {% for item in items %}
+                <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro testimonial_card(name, role, quote, image) %}
+<div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+    <div class="card border-0 shadow-sm h-100">
+        <div class="card-body text-center">
+            <img src="{{ image }}" alt="{{ name }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+            <blockquote class="blockquote">
+                <p class="mb-3">{{ quote }}</p>
+            </blockquote>
+            <footer class="blockquote-footer mb-0">{{ name }}, <cite title="Source Title">{{ role }}</cite></footer>
+        </div>
+    </div>
+</div>
+{% endmacro %}
