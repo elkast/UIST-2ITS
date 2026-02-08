@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block titre %}Assignations Enseignants - Directeur{% endblock %}
+{% block contenu %}
+<div class="container-fluid py-4">
+  <div class="flex justify-between items-center mb-6">
+    <div>
+      <h1 class="text-2xl font-bold">Assignations Enseignants</h1>
+      <p class="text-gray-600">Assigner enseignants aux cours et filières</p>
+    </div>
+    <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
+      + Nouvelle Assignation
+    </button>
+  </div>
+
+  <div class="bg-white shadow rounded overflow-hidden">
+    {% if assignations %}
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Enseignant</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Matricule</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cours</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Filière</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Niveau</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Année</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        {% for a in assignations %}
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap font-medium">{{ a.enseignant_nom }} {{ a.enseignant_prenom }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ a.enseignant_matricule }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ a.nom_cours }}</td>
+          <td class="px-6 py-4 whitespace-nowrap">{{ a.nom_filiere }}</td>
+          <td class="px-6 py-4 whitespace-nowrap"><span class="px-2 py-1 bg-purple-100 text-purple-800 rounded text-xs">{{ a.niveau }}</span></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm">{{ a.annee_academique }}</td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ a.date_assignation }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="p-8 text-center text-gray-500">Aucune assignation</div>
+    {% endif %}
+  </div>
+</div>
+
+<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="bg-white rounded-lg p-6 w-full max-w-md">
+    <h3 class="text-lg font-bold mb-4">Nouvelle Assignation</h3>
+    <form method="POST" action="{{ url_for('directeur.creer_assignation') }}">
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Enseignant *</label>
+        <select name="enseignant_id" required class="w-full border rounded px-3 py-2">
+          <option value="">Sélectionner...</option>
+          {% for ens in enseignants %}
+          <option value="{{ ens.utilisateur_id }}">{{ ens.nom }} {{ ens.prenom }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Cours *</label>
+        <select name="cours_id" required class="w-full border rounded px-3 py-2">
+          <option value="">Sélectionner...</option>
+          {% for c in cours %}
+          <option value="{{ c.id }}">{{ c.nom_cours }} ({{ c.type_cours }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Filière *</label>
+        <select name="filiere_id" required class="w-full border rounded px-3 py-2">
+          <option value="">Sélectionner...</option>
+          {% for f in filieres %}
+          <option value="{{ f.id }}">{{ f.nom_filiere }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="mb-4">
+        <label class="block text-sm font-medium mb-1">Niveau *</label>
+        <select name="niveau" required class="w-full border rounded px-3 py-2">
+          <option value="L1">L1</option>
+          <option value="L2">L2</option>
+          <option value="L3">L3</option>
+          <option value="M1">M1</option>
+          <option value="M2">M2</option>
+        </select>
+      </div>
+      <div class="flex justify-end space-x-2">
+        <button type="button" onclick="document.getElementById('modal').classList.add('hidden')" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded">Annuler</button>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Créer</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

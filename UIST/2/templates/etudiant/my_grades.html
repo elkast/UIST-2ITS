@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block titre %}Mes notes{% endblock %}
+{% block contenu %}
+<h1 class="text-2xl font-bold mb-4">Mes notes</h1>
+{% if notes_par_cours %}
+{% for cid, data in notes_par_cours.items() %}
+<div class="bg-white shadow rounded p-4 mb-4">
+  <div class="font-semibold">{{ data.cours }}</div>
+  <div class="text-sm text-gray-600">Moyenne : {{ data.moyenne }}</div>
+  <ul class="mt-2 space-y-1 text-sm">
+    {% for n in data.notes %}
+    <li class="border-t pt-1">{{ n.type_evaluation }} : {{ n.note }} (coef {{ n.coefficient }})</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endfor %}
+{% else %}
+<p class="text-gray-500">Aucune note disponible.</p>
+{% endif %}
+{% endblock %}
+

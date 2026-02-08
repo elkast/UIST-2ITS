@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block titre %}Dashboard Étudiant{% endblock %}
+{% block contenu %}
+<div class="container-fluid py-4">
+    <h1 class="text-2xl font-bold mb-4">Espace Étudiant</h1>
+    <p class="text-gray-700 mb-4">Consultation de vos résultats et emploi du temps</p>
+    
+    <!-- Statistiques -->
+    <div class="grid md:grid-cols-3 gap-4 mb-6">
+        <div class="bg-white shadow rounded p-4 border-l-4 border-blue-500">
+            <div class="text-sm text-gray-500">Moyenne Générale</div>
+            <div class="text-2xl font-bold text-blue-600">{{ moyenne_generale if moyenne_generale else 'N/A' }}</div>
+        </div>
+        <div class="bg-white shadow rounded p-4 border-l-4 border-green-500">
+            <div class="text-sm text-gray-500">Mes Cours</div>
+            <div class="text-2xl font-bold text-green-600">{{ nb_cours if nb_cours else 0 }}</div>
+        </div>
+        <div class="bg-white shadow rounded p-4 border-l-4 border-purple-500">
+            <div class="text-sm text-gray-500">Prochains Cours</div>
+            <div class="text-2xl font-bold text-purple-600">{{ prochains_cours|length if prochains_cours else 0 }}</div>
+        </div>
+    </div>
+
+    <!-- Actions Rapides -->
+    <div class="bg-white shadow rounded p-6">
+        <h2 class="text-lg font-bold mb-4 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/></svg>
+            Actions Rapides
+        </h2>
+        <div class="grid md:grid-cols-4 gap-3">
+            <a href="{{ url_for('edt.mon_emploi_du_temps') }}" class="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"/></svg>
+                Mon EDT
+            </a>
+            <a href="{{ url_for('etudiant.mes_notes') }}" class="bg-green-500 hover:bg-green-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+                Mes Notes
+            </a>
+            <a href="{{ url_for('etudiant.my_bulletins') }}" class="bg-purple-500 hover:bg-purple-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"/></svg>
+                Mes Bulletins
+            </a>
+            <a href="{{ url_for('etudiant.mes_cours') }}" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded px-4 py-3 text-center transition">
+                <svg class="w-6 h-6 mx-auto mb-1" fill="currentColor" viewBox="0 0 20 20"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3z"/></svg>
+                Mes Cours
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

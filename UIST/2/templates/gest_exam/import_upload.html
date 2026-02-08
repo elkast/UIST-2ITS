@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block titre %}Import de notes{% endblock %}
+{% block contenu %}
+<h1 class="text-2xl font-bold mb-4">Import Excel/CSV</h1>
+<p class="text-gray-700 mb-4">Chargez un fichier et associez cours / filière.</p>
+<form method="post" action="{{ url_for('admin.importer_notes_web') }}" enctype="multipart/form-data" class="bg-white shadow rounded p-4 space-y-3">
+  <label class="block text-sm font-medium">Cours</label>
+  <select name="cours_id" class="w-full border rounded px-3 py-2">
+    {% for c in cours_liste or cours %}
+    <option value="{{ c.id }}">{{ c.nom_cours }}</option>
+    {% endfor %}
+  </select>
+  <label class="block text-sm font-medium">Filière</label>
+  <select name="filiere_id" class="w-full border rounded px-3 py-2">
+    {% for f in filieres %}
+    <option value="{{ f.id }}">{{ f.nom_filiere }}</option>
+    {% endfor %}
+  </select>
+  <input type="file" name="file" class="w-full border rounded px-3 py-2" accept=".xlsx,.xls">
+  <button class="bg-uist-bleu text-white px-4 py-2 rounded">Importer</button>
+</form>
+{% if result %}
+<div class="mt-4 bg-white shadow rounded p-4">
+  <div class="font-semibold">Résultat</div>
+  <pre class="text-xs mt-2 bg-gray-50 p-2 rounded">{{ result|tojson(indent=2) }}</pre>
+{% endif %}
+{% endblock %}
+

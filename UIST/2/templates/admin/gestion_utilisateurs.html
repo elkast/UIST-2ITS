@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{% block titre %}Gestion des Utilisateurs - UIST-2ITS{% endblock %}
+
+{% block contenu %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Gestion des Utilisateurs</h1>
+    <p class="text-gray-600">Créer, modifier et gérer tous les utilisateurs du système</p>
+</div>
+
+<!-- Filtres et Recherche -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <form method="GET" action="{{ url_for('admin.gestion_utilisateurs') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Recherche</label>
+            <input
+                type="text"
+                name="recherche"
+                value="{{ recherche }}"
+                placeholder="Nom, prénom ou matricule..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent"
+            >
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Rôle</label>
+            <select name="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                <option value="">Tous les rôles</option>
+                <option value="etudiant" {% if role_filtre == 'etudiant' %}selected{% endif %}>Étudiant</option>
+                <option value="enseignant" {% if role_filtre == 'enseignant' %}selected{% endif %}>Enseignant</option>
+                <option value="parent" {% if role_filtre == 'parent' %}selected{% endif %}>Parent</option>
+                <option value="administration" {% if role_filtre == 'administration' %}selected{% endif %}>Administration</option>
+                <option value="sous_admin" {% if role_filtre == 'sous_admin' %}selected{% endif %}>Sous-Admin</option>
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Filière</label>
+            <select name="filiere" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                <option value="">Toutes les filières</option>
+                {% for filiere in filieres %}
+                <option value="{{ filiere.id }}" {% if filiere_filtre == filiere.id|string %}selected{% endif %}>
+                    {{ filiere.nom_filiere }} - {{ filiere.niveau }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="flex items-end">
+            <button type="submit" class="w-full bg-uist-bleu hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+                🔍 Filtrer
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Bouton Ajouter -->
+<div class="mb-6">
+    <button onclick="document.getElementById('modalAjouter').classList.remove('hidden')" 
+            class="bg-uist-vert hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+        ➕ Ajouter un Utilisateur
+    </button>
+</div>
+
+<!-- Tableau des Utilisateurs -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Matricule</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom Complet</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rôle</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Détails</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% if utilisateurs %}
+                {% for user in utilisateurs %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="font-mono text-sm font-semibold text-gray-900">{{ user.matricule }}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ user.nom }} {{ user.prenom }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        {% if user.role == 'etudiant' %}
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                            👨‍🎓 Étudiant
+                        </span>
+                        {% elif user.role == 'enseignant' %}
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                            👨‍🏫 Enseignant
+                        </span>
+                        {% elif user.role == 'administration' %}
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                            👔 Admin
+                        </span>
+                        {% elif user.role == 'sous_admin' %}
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-orange-100 text-orange-800">
+                            👤 Sous-Admin
+                        </span>
+                        {% elif user.role == 'parent' %}
+                        <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            👨‍👩‍👧‍👦 Parent
+                        </span>
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {% if user.role == 'etudiant' and user.nom_filiere %}
+                            {{ user.nom_filiere }}
+                        {% elif user.role == 'enseignant' and user.specialite %}
+                            {{ user.specialite }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                        <div class="flex flex-wrap gap-1">
+                            <button onclick="ouvrirModalModifier({{ user.id }}, '{{ user.nom }}', '{{ user.prenom }}', '{{ user.matricule }}', '{{ user.role }}', '{{ user.filiere_id or '' }}', '{{ user.specialite or '' }}')"
+                                    class="text-uist-bleu hover:text-blue-600 text-xs px-2 py-1 rounded bg-blue-50 hover:bg-blue-100 transition">
+                                ✏️ Modifier
+                            </button>
+                            <form method="POST" action="{{ url_for('admin.supprimer_utilisateur', utilisateur_id=user.id) }}" class="inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                                <button type="submit" class="text-red-600 hover:text-red-800 text-xs px-2 py-1 rounded bg-red-50 hover:bg-red-100 transition">
+                                    🗑️ Supprimer
+                                </button>
+                            </form>
+                            {% if user.role == 'etudiant' %}
+                            <button onclick="quickAction('view_notes', {{ user.id }})"
+                                    class="text-green-600 hover:text-green-800 text-xs px-2 py-1 rounded bg-green-50 hover:bg-green-100 transition">
+                                📚 Notes
+                            </button>
+                            {% elif user.role == 'enseignant' %}
+                            <button onclick="quickAction('view_schedule', {{ user.id }})"
+                                    class="text-purple-600 hover:text-purple-800 text-xs px-2 py-1 rounded bg-purple-50 hover:bg-purple-100 transition">
+                                📅 EDT
+                            </button>
+                            <button onclick="quickAction('view_presence', {{ user.id }})"
+                                    class="text-orange-600 hover:text-orange-800 text-xs px-2 py-1 rounded bg-orange-50 hover:bg-orange-100 transition">
+                                📊
+                            </button>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                        Aucun utilisateur trouvé
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Ajouter -->
+<div id="modalAjouter" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-2xl font-bold text-gray-900">Ajouter un Utilisateur</h3>
+            <button onclick="document.getElementById('modalAjouter').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-2xl">
+                ×
+            </button>
+        </div>
+        
+        <form method="POST" action="{{ url_for('admin.ajouter_utilisateur') }}" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
+                    <input type="text" name="nom" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prénom *</label>
+                    <input type="text" name="prenom" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Rôle *</label>
+                <select name="role" id="roleAjouter" onchange="toggleFieldsAjouter()" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                    <option value="">Sélectionner un rôle</option>
+                    <option value="etudiant">Étudiant</option>
+                    <option value="enseignant">Enseignant</option>
+                    <option value="parent">Parent</option>
+                    <option value="administration">Administration</option>
+                    <option value="sous_admin">Sous-Admin</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Matricule (laisser vide pour génération auto)</label>
+                <input type="text" name="matricule" placeholder="Ex: E2025001" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+            </div>
+            
+            <div id="filiereFieldAjouter" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Filière *</label>
+                <select name="filiere_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                    <option value="">Sélectionner une filière</option>
+                    {% for filiere in filieres %}
+                    <option value="{{ filiere.id }}">{{ filiere.nom_filiere }} - {{ filiere.niveau }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div id="specialiteFieldAjouter" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Spécialité</label>
+                <input type="text" name="specialite" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+            </div>
+            
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="document.getElementById('modalAjouter').classList.add('hidden')" 
+                        class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition">
+                    Annuler
+                </button>
+                <button type="submit" class="px-6 py-2 bg-uist-vert hover:bg-green-600 text-white rounded-lg transition">
+                    Ajouter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal Modifier -->
+<div id="modalModifier" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-2/3 lg:w-1/2 shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-2xl font-bold text-gray-900">Modifier un Utilisateur</h3>
+            <button onclick="document.getElementById('modalModifier').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-2xl">
+                ×
+            </button>
+        </div>
+        
+        <form id="formModifier" method="POST" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nom *</label>
+                    <input type="text" name="nom" id="modNom" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Prénom *</label>
+                    <input type="text" name="prenom" id="modPrenom" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Matricule *</label>
+                <input type="text" name="matricule" id="modMatricule" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Rôle *</label>
+                <select name="role" id="modRole" onchange="toggleFieldsModifier()" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                    <option value="etudiant">Étudiant</option>
+                    <option value="enseignant">Enseignant</option>
+                    <option value="parent">Parent</option>
+                    <option value="administration">Administration</option>
+                    <option value="sous_admin">Sous-Admin</option>
+                </select>
+            </div>
+            
+            <div id="filiereFieldModifier" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Filière</label>
+                <select name="filiere_id" id="modFiliere" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                    <option value="">Sélectionner une filière</option>
+                    {% for filiere in filieres %}
+                    <option value="{{ filiere.id }}">{{ filiere.nom_filiere }} - {{ filiere.niveau }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div id="specialiteFieldModifier" class="hidden">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Spécialité</label>
+                <input type="text" name="specialite" id="modSpecialite" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+            </div>
+            
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="document.getElementById('modalModifier').classList.add('hidden')" 
+                        class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition">
+                    Annuler
+                </button>
+                <button type="submit" class="px-6 py-2 bg-uist-bleu hover:bg-blue-600 text-white rounded-lg transition">
+                    Modifier
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function toggleFieldsAjouter() {
+    const role = document.getElementById('roleAjouter').value;
+    const filiereField = document.getElementById('filiereFieldAjouter');
+    const specialiteField = document.getElementById('specialiteFieldAjouter');
+    
+    filiereField.classList.add('hidden');
+    specialiteField.classList.add('hidden');
+    
+    if (role === 'etudiant') {
+        filiereField.classList.remove('hidden');
+    } else if (role === 'enseignant') {
+        specialiteField.classList.remove('hidden');
+    }
+}
+
+function toggleFieldsModifier() {
+    const role = document.getElementById('modRole').value;
+    const filiereField = document.getElementById('filiereFieldModifier');
+    const specialiteField = document.getElementById('specialiteFieldModifier');
+    
+    filiereField.classList.add('hidden');
+    specialiteField.classList.add('hidden');
+    
+    if (role === 'etudiant') {
+        filiereField.classList.remove('hidden');
+    } else if (role === 'enseignant') {
+        specialiteField.classList.remove('hidden');
+    }
+}
+
+function ouvrirModalModifier(id, nom, prenom, matricule, role, filiere, specialite) {
+    document.getElementById('formModifier').action = `/admin/utilisateurs/modifier/${id}`;
+    document.getElementById('modNom').value = nom;
+    document.getElementById('modPrenom').value = prenom;
+    document.getElementById('modMatricule').value = matricule;
+    document.getElementById('modRole').value = role;
+    document.getElementById('modFiliere').value = filiere;
+    document.getElementById('modSpecialite').value = specialite;
+
+    toggleFieldsModifier();
+    document.getElementById('modalModifier').classList.remove('hidden');
+}
+
+function quickAction(action, userId) {
+    switch(action) {
+        case 'view_notes':
+            window.location.href = `/admin/etudiants/${userId}/notes`;
+            break;
+        case 'view_schedule':
+            window.location.href = `/edt/enseignant/${userId}`;
+            break;
+        case 'view_presence':
+            window.location.href = `/admin/enseignants/${userId}/presences`;
+            break;
+        default:
+            console.log('Action non reconnue:', action);
+    }
+}
+</script>
+
+{% endblock %}

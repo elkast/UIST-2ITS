@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block titre %}Dashboard Gestionnaire Examens - UIST-2ITS{% endblock %}
+
+{% block contenu %}
+<div class="mb-8">
+    <h2 class="text-3xl font-bold text-gray-800">Dashboard Gestionnaire Examens</h2>
+    <p class="text-gray-600 mt-2">Structuration des examens et importation massive de notes</p>
+</div>
+
+<!-- Statistiques -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <div class="bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg shadow-lg p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm opacity-90">Imports Effectués</p>
+                <p class="text-3xl font-bold mt-1">{{ stats.imports_total }}</p>
+            </div>
+            <svg class="w-12 h-12 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+        </div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg shadow-lg p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm opacity-90">Cours</p>
+                <p class="text-3xl font-bold mt-1">{{ stats.nb_cours }}</p>
+            </div>
+            <svg class="w-12 h-12 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+        </div>
+    </div>
+    
+    <div class="bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg shadow-lg p-6 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm opacity-90">Filières</p>
+                <p class="text-3xl font-bold mt-1">{{ stats.nb_filieres }}</p>
+            </div>
+            <svg class="w-12 h-12 opacity-75" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<!-- Import Excel -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-8">
+    <h3 class="text-xl font-semibold text-gray-800 mb-4">📤 Importer des Notes (Excel)</h3>
+    
+    <form action="/api/notes/import" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Cours</label>
+                <select name="cours_id" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                    <option value="">-- Sélectionner un cours --</option>
+                    {% for cours in cours %}
+                    <option value="{{ cours.id }}">{{ cours.nom_cours }} ({{ cours.type_cours }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Filière</label>
+                <select name="filiere_id" required
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                    <option value="">-- Sélectionner une filière --</option>
+                    {% for filiere in filieres %}
+                    <option value="{{ filiere.id }}">{{ filiere.nom_filiere }} - {{ filiere.niveau }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Fichier Excel</label>
+                <input type="file" name="file" accept=".xlsx,.xls" required
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+            </div>
+        </div>
+        
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <p class="text-sm text-blue-800 font-medium mb-2">📋 Format du fichier Excel:</p>
+            <ul class="text-xs text-blue-700 space-y-1">
+                <li>• Colonne A: Matière (nom du cours)</li>
+                <li>• Colonne B: Matricule Élève</li>
+                <li>• Colonne C: Note (0-20)</li>
+                <li>• Colonne D: Coefficient</li>
+                <li>• Colonne E: Type Évaluation (CC, TD, TP, EXAMEN, RATTRAPAGE)</li>
+                <li>• Colonne F: Date (optionnel)</li>
+            </ul>
+        </div>
+        
+        <button type="submit" 
+                class="w-full bg-uist-bleu hover:bg-blue-600 text-white px-6 py-3 rounded-lg transition font-medium">
+            📥 Importer les Notes
+        </button>
+    </form>
+</div>
+
+<!-- Historique des Imports -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-800">📋 Historique des Imports</h3>
+    </div>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fichier</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cours</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Filière</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes Importées</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Importé par</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% if imports %}
+                    {% for import in imports %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ import.id }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <span class="font-mono text-xs">{{ import.nom_fichier }}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ import.nom_cours }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ import.nom_filiere }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                {{ import.nb_lignes }} notes
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ import.importe_par_nom }} {{ import.importe_par_prenom }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ import.date_import.strftime('%d/%m/%Y %H:%M') if import.date_import else 'N/A' }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-8 text-center text-gray-500">
+                            Aucun import effectué pour le moment
+                        </td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

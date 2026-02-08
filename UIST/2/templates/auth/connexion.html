@@ -1,0 +1,210 @@
+{% extends "base_moderne.html" %}
+
+{% block titre %}Connexion - UIST-2ITS{% endblock %}
+
+{% block contenu %}
+<div class="container-fluid">
+    <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="col-md-6 col-lg-5 col-xl-4">
+            <!-- Section avec lazy loading -->
+            <div id="section-connexion" class="lazy-load">
+
+                <!-- Skeleton pendant chargement -->
+                {% include 'composants/skeleton_chargement.html' %}
+                {% set type = 'carte' %}
+                {% set nombre = 1 %}
+
+                <!-- Contenu réel -->
+                <div class="contenu-reel" style="display: none;">
+                <div class="max-w-md mx-auto mt-8 lg:mt-12">
+                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-8 lg:p-10">
+                        <div class="text-center mb-8">
+                            <div class="flex justify-center mb-4">
+                                <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="UIST-2ITS" class="h-16 w-auto" onerror="this.style.display='none';">
+                            </div>
+                            <h2 class="text-2xl lg:text-3xl font-bold text-gray-800 mb-2">Connexion</h2>
+                            <p class="text-gray-600 text-sm lg:text-base">Accédez à votre espace UIST-2ITS</p>
+                        </div>
+
+                        <form method="POST" action="{{ url_for('auth.connexion') }}" class="space-y-6">
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Email
+                                </label>
+                                <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    required
+                                    autofocus
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent outline-none transition"
+                                    placeholder="votre.email@uist-2its.cm"
+                                >
+                            </div>
+
+                            <div>
+                                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Mot de passe
+                                </label>
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent outline-none transition"
+                                    placeholder="Votre mot de passe (optionnel pour test)"
+                                >
+                                <p class="text-xs text-gray-500 mt-1">Mot de passe par défaut: password123</p>
+                            </div>
+
+                            <div>
+                                <p class="text-xs text-gray-500 mb-2">✨ Comptes test disponibles (cliquez pour remplir) :</p>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                        <!-- Super Admin -->
+                                        <div class="bg-gradient-to-br from-red-50 to-pink-50 p-3 rounded-lg border border-red-200 shadow-sm">
+                                            <span class="font-semibold text-red-700 block mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                                                </svg>
+                                                Super Administrateur
+                                            </span>
+                                            <span class="test-account cursor-pointer text-red-600 hover:text-red-800 hover:underline block font-medium" data-email="admin@uist-2its.cm">
+                                                🔐 admin@uist-2its.cm
+                                            </span>
+                                            <span class="text-gray-500 text-[10px] mt-1 block">Accès complet au système</span>
+                                        </div>
+
+                                        <!-- Directeur -->
+                                        <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-3 rounded-lg border border-purple-200 shadow-sm">
+                                            <span class="font-semibold text-purple-700 block mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                </svg>
+                                                Directeur Académique
+                                            </span>
+                                            <span class="test-account cursor-pointer text-purple-600 hover:text-purple-800 hover:underline block font-medium" data-email="directeur@uist-2its.cm">
+                                                👨‍💼 directeur@uist-2its.cm
+                                            </span>
+                                            <span class="text-gray-500 text-[10px] mt-1 block">Validation des notes</span>
+                                        </div>
+
+                                        <!-- Gestionnaires -->
+                                        <div class="bg-gradient-to-br from-green-50 to-emerald-50 p-3 rounded-lg border border-green-200 shadow-sm">
+                                            <span class="font-semibold text-green-700 block mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                                </svg>
+                                                Gestionnaires
+                                            </span>
+                                            <div class="grid grid-cols-1 gap-1">
+                                                <span class="test-account cursor-pointer text-green-600 hover:text-green-800 hover:underline block text-[10px]" data-email="gestion1@uist-2its.cm">
+                                                    📋 gestion1@uist-2its.cm
+                                                </span>
+                                                <span class="test-account cursor-pointer text-green-600 hover:text-green-800 hover:underline block text-[10px]" data-email="gestion2@uist-2its.cm">
+                                                    📋 gestion2@uist-2its.cm
+                                                </span>
+                                                <span class="test-account cursor-pointer text-green-600 hover:text-green-800 hover:underline block text-[10px]" data-email="gestion3@uist-2its.cm">
+                                                    📋 gestion3@uist-2its.cm
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Enseignants -->
+                                        <div class="bg-gradient-to-br from-blue-50 to-cyan-50 p-3 rounded-lg border border-blue-200 shadow-sm">
+                                            <span class="font-semibold text-blue-700 block mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                                </svg>
+                                                Enseignants
+                                            </span>
+                                            <div class="grid grid-cols-1 gap-1">
+                                                <span class="test-account cursor-pointer text-blue-600 hover:text-blue-800 hover:underline block text-[10px]" data-email="prof1@uist-2its.cm">
+                                                    👨‍🏫 prof1@uist-2its.cm
+                                                </span>
+                                                <span class="test-account cursor-pointer text-blue-600 hover:text-blue-800 hover:underline block text-[10px]" data-email="prof2@uist-2its.cm">
+                                                    👩‍🏫 prof2@uist-2its.cm
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Étudiants -->
+                                        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-3 rounded-lg border border-indigo-200 shadow-sm">
+                                            <span class="font-semibold text-indigo-700 block mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"/>
+                                                </svg>
+                                                Étudiants
+                                            </span>
+                                            <div class="grid grid-cols-1 gap-1">
+                                                <span class="test-account cursor-pointer text-indigo-600 hover:text-indigo-800 hover:underline block text-[10px]" data-email="etudiant1@uist-2its.cm">
+                                                    🎓 etudiant1@uist-2its.cm
+                                                </span>
+                                                <span class="test-account cursor-pointer text-indigo-600 hover:text-indigo-800 hover:underline block text-[10px]" data-email="etudiant2@uist-2its.cm">
+                                                    🎓 etudiant2@uist-2its.cm
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Parents -->
+                                        <div class="bg-gradient-to-br from-orange-50 to-amber-50 p-3 rounded-lg border border-orange-200 shadow-sm">
+                                            <span class="font-semibold text-orange-700 block mb-2 flex items-center">
+                                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                                </svg>
+                                                Parents
+                                            </span>
+                                            <div class="grid grid-cols-1 gap-1">
+                                                <span class="test-account cursor-pointer text-orange-600 hover:text-orange-800 hover:underline block text-[10px]" data-email="parent1@uist-2its.cm">
+                                                    👨‍👩‍👧 parent1@uist-2its.cm
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="w-full bg-uist-bleu hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition shadow-md hover:shadow-lg"
+                            >
+                                Se Connecter
+                            </button>
+                        </form>
+
+                        <script>
+                        // Gestionnaire d'événements pour les comptes test
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const testAccounts = document.querySelectorAll('.test-account');
+
+                            testAccounts.forEach(account => {
+                                account.addEventListener('click', function() {
+                                    const email = this.getAttribute('data-email');
+                                    const emailInput = document.getElementById('email');
+                                    const passwordInput = document.getElementById('password');
+                                    emailInput.value = email;
+                                    passwordInput.value = 'password123';
+                                    emailInput.focus();
+                                });
+                            });
+                        });
+                        </script>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Script pour afficher immédiatement -->
+                <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    LazyLoading.afficherContenu('section-connexion');
+                });
+                </script>
+
+                <div class="mt-4 text-center">
+                    <a href="/diagnostic" class="text-sm text-uist-bleu hover:underline">
+                        🔍 Problème de connexion ? Utilisez la page de diagnostic
+                    </a>
+                </div>
+                {% endblock %}

@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+
+{% block titre %}Gestion des Présences - UIST-2ITS{% endblock %}
+
+{% block contenu %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Gestion des Présences</h1>
+    <p class="text-gray-600">Marquer la présence des enseignants pour chaque cours</p>
+</div>
+
+<!-- Navigation Semaine -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <div class="flex justify-between items-center">
+        <a href="{{ url_for('admin.gestion_presences', date=semaine_precedente.strftime('%Y-%m-%d')) }}" 
+           class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg transition">
+            ← Semaine Précédente
+        </a>
+        
+        <div class="text-center">
+            <h2 class="text-xl font-bold text-gray-800">
+                Semaine du {{ debut_semaine.strftime('%d/%m/%Y') }} au {{ fin_semaine.strftime('%d/%m/%Y') }}
+            </h2>
+        </div>
+        
+        <a href="{{ url_for('admin.gestion_presences', date=semaine_suivante.strftime('%Y-%m-%d')) }}" 
+           class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded-lg transition">
+            Semaine Suivante →
+        </a>
+    </div>
+</div>
+
+<!-- Lien vers Statistiques -->
+<div class="mb-6">
+    <a href="{{ url_for('admin.statistiques_presences') }}" 
+       class="bg-uist-violet hover:bg-purple-600 text-white font-semibold py-3 px-6 rounded-lg transition inline-block">
+        📊 Voir les Statistiques
+    </a>
+</div>
+
+<!-- Tableau des Créneaux -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jour</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Horaire</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cours</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Enseignant</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Salle</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Présence</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+            {% if creneaux %}
+                {% for creneau in creneaux %}
+                {% set date_cours = debut_semaine.strftime('%Y-%m-%d') %}
+                {% set presence_key = creneau.id|string + '_' + date_cours %}
+                {% set presence = presences_dict.get(presence_key) %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {{ creneau.jour }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ creneau.heure_debut|format_time }} - {{ creneau.heure_fin|format_time }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">{{ creneau.nom_cours }}</div>
+                        <div class="text-sm text-gray-500">{{ creneau.type_cours }}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ creneau.enseignant_nom }} {{ creneau.enseignant_prenom }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ creneau.nom_salle }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button onclick="ouvrirModalPresence({{ creneau.id }}, {{ creneau.enseignant_id }}, '{{ date_cours }}', '{{ creneau.nom_cours }}', '{{ creneau.enseignant_nom }} {{ creneau.enseignant_prenom }}', '{{ presence.statut if presence else 'non_marque' }}', '{{ presence.remarques if presence else '' }}')"
+                                class="px-3 py-1 rounded-full text-xs font-semibold
+                                {% if presence %}
+                                    {% if presence.statut == 'present' %}bg-green-100 text-green-800
+                                    {% elif presence.statut == 'absent' %}bg-red-100 text-red-800
+                                    {% elif presence.statut == 'retard' %}bg-yellow-100 text-yellow-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}
+                                {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {% if presence %}
+                                {% if presence.statut == 'present' %}✅ Présent
+                                {% elif presence.statut == 'absent' %}❌ Absent
+                                {% elif presence.statut == 'retard' %}⏰ Retard
+                                {% else %}⚪ Non marqué{% endif %}
+                            {% else %}
+                                ⚪ Non marqué
+                            {% endif %}
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+                        Aucun créneau trouvé
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Marquer Présence -->
+<div id="modalPresence" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-2xl font-bold text-gray-900">Marquer la Présence</h3>
+            <button onclick="document.getElementById('modalPresence').classList.add('hidden')" class="text-gray-400 hover:text-gray-600 text-2xl">
+                ×
+            </button>
+        </div>
+        
+        <div id="infosCours" class="mb-4 p-4 bg-gray-50 rounded-lg">
+            <!-- Infos dynamiques -->
+        </div>
+        
+        <form method="POST" action="{{ url_for('admin.marquer_presence') }}" class="space-y-4">
+            <input type="hidden" name="creneau_id" id="presCreneauId">
+            <input type="hidden" name="enseignant_id" id="presEnseignantId">
+            <input type="hidden" name="date_cours" id="presDateCours">
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Statut *</label>
+                <div class="grid grid-cols-3 gap-3">
+                    <label class="flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer hover:bg-green-50 has-[:checked]:border-green-500 has-[:checked]:bg-green-50">
+                        <input type="radio" name="statut" value="present" required class="mr-2">
+                        <span>✅ Présent</span>
+                    </label>
+                    <label class="flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer hover:bg-red-50 has-[:checked]:border-red-500 has-[:checked]:bg-red-50">
+                        <input type="radio" name="statut" value="absent" required class="mr-2">
+                        <span>❌ Absent</span>
+                    </label>
+                    <label class="flex items-center justify-center p-3 border-2 rounded-lg cursor-pointer hover:bg-yellow-50 has-[:checked]:border-yellow-500 has-[:checked]:bg-yellow-50">
+                        <input type="radio" name="statut" value="retard" required class="mr-2">
+                        <span>⏰ Retard</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Remarques</label>
+                <textarea name="remarques" id="presRemarques" rows="3" 
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu"
+                          placeholder="Remarques optionnelles..."></textarea>
+            </div>
+            
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="document.getElementById('modalPresence').classList.add('hidden')" 
+                        class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition">
+                    Annuler
+                </button>
+                <button type="submit" class="px-6 py-2 bg-uist-bleu hover:bg-blue-600 text-white rounded-lg transition">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function ouvrirModalPresence(creneauId, enseignantId, dateCours, nomCours, nomEnseignant, statut, remarques) {
+    document.getElementById('presCreneauId').value = creneauId;
+    document.getElementById('presEnseignantId').value = enseignantId;
+    document.getElementById('presDateCours').value = dateCours;
+    document.getElementById('presRemarques').value = remarques;
+    
+    // Afficher les infos
+    document.getElementById('infosCours').innerHTML = `
+        <p class="text-sm"><strong>Cours:</strong> ${nomCours}</p>
+        <p class="text-sm"><strong>Enseignant:</strong> ${nomEnseignant}</p>
+        <p class="text-sm"><strong>Date:</strong> ${dateCours}</p>
+    `;
+    
+    // Pré-sélectionner le statut
+    if (statut && statut !== 'non_marque') {
+        document.querySelector(`input[name="statut"][value="${statut}"]`).checked = true;
+    }
+    
+    document.getElementById('modalPresence').classList.remove('hidden');
+}
+</script>
+
+{% endblock %}

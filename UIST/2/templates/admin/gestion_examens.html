@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% block titre %}Gestion des Examens - UIST-2ITS{% endblock %}
+{% block contenu %}
+<div class="mb-6 lg:mb-8">
+    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">📝 Gestion des Examens</h2>
+    <p class="text-sm lg:text-base text-gray-600 mt-2">Planifier et gérer les examens dans l'emploi du temps</p>
+</div>
+
+<!-- Bouton d'ajout -->
+<div class="mb-6">
+    <button onclick="document.getElementById('modal-ajout').classList.remove('hidden')" 
+            class="bg-uist-bleu text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition font-semibold flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Ajouter un Examen
+    </button>
+</div>
+
+<!-- Liste des examens -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    {% if examens %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Cours</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Filière</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Date & Heure</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Enseignant</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Salle</th>
+                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-700 uppercase">Durée</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+                {% for examen in examens %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ examen.nom_cours }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ examen.nom_filiere }} {{ examen.niveau }}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                            {% if examen.type_creneau == 'examen' %}bg-red-100 text-red-800
+                            {% elif examen.type_creneau == 'controle' %}bg-orange-100 text-orange-800
+                            {% else %}bg-purple-100 text-purple-800{% endif %}">
+                            {{ examen.type_creneau|upper }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">
+                        {{ examen.jour }}<br>
+                        {{ examen.heure_debut|format_time }} - {{ examen.heure_fin|format_time }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-600">{{ examen.enseignant_prenom }} {{ examen.enseignant_nom }}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-gray-700">{{ examen.nom_salle }}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">
+                        {% if examen.duree_examen %}{{ examen.duree_examen }} min{% else %}-{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="p-8 text-center">
+        <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        <p class="text-gray-500">Aucun examen planifié</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Modal d'ajout -->
+<div id="modal-ajout" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-2xl font-bold text-gray-800">Ajouter un Examen</h3>
+            <button onclick="document.getElementById('modal-ajout').classList.add('hidden')" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <form method="POST" action="{{ url_for('admin.ajouter_examen') }}">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Type d'évaluation *</label>
+                    <select name="type_creneau" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                        <option value="examen">Examen</option>
+                        <option value="controle">Contrôle Continu</option>
+                        <option value="tp_note">TP Noté</option>
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Cours *</label>
+                    <select name="cours_id" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                        <option value="">Sélectionnez un cours</option>
+                        {% for cours in cours %}
+                        <option value="{{ cours.id }}">{{ cours.nom_cours }} ({{ cours.nom_filiere }} {{ cours.niveau }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Enseignant *</label>
+                    <select name="enseignant_id" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                        <option value="">Sélectionnez un enseignant</option>
+                        {% for enseignant in enseignants %}
+                        <option value="{{ enseignant.id }}">{{ enseignant.prenom }} {{ enseignant.nom }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Salle *</label>
+                    <select name="salle_id" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                        <option value="">Sélectionnez une salle</option>
+                        {% for salle in salles %}
+                        <option value="{{ salle.id }}">{{ salle.nom_salle }} (Capacité: {{ salle.capacite }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Jour *</label>
+                    <select name="jour" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                        <option value="Lundi">Lundi</option>
+                        <option value="Mardi">Mardi</option>
+                        <option value="Mercredi">Mercredi</option>
+                        <option value="Jeudi">Jeudi</option>
+                        <option value="Vendredi">Vendredi</option>
+                        <option value="Samedi">Samedi</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Durée (minutes)</label>
+                    <input type="number" name="duree_examen" min="30" max="300" step="15" placeholder="120" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Heure de début *</label>
+                    <input type="time" name="heure_debut" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Heure de fin *</label>
+                    <input type="time" name="heure_fin" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Coefficient</label>
+                    <input type="number" name="coefficient_examen" min="0.5" max="10" step="0.5" placeholder="1.0" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu focus:border-transparent">
+                </div>
+            </div>
+            
+            <div class="mt-6 flex justify-end space-x-3">
+                <button type="button" onclick="document.getElementById('modal-ajout').classList.add('hidden')" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition">
+                    Annuler
+                </button>
+                <button type="submit" class="px-6 py-2 bg-uist-bleu text-white rounded-lg hover:bg-blue-700 transition font-semibold">
+                    Ajouter l'Examen
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

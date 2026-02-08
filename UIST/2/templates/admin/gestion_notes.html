@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block titre %}Gestion des Notes - Administration - UIST-2ITS{% endblock %}
+
+{% block contenu %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">📊 Gestion Globale des Notes</h1>
+    <p class="text-gray-600">Consulter et modifier toutes les notes</p>
+</div>
+
+<!-- Filtres -->
+<div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h3 class="text-lg font-semibold text-gray-800 mb-4">🔍 Filtres</h3>
+    <form method="GET" action="{{ url_for('admin.gestion_notes') }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Filière</label>
+            <select name="filiere_id" onchange="this.form.submit()" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                <option value="">-- Toutes les filières --</option>
+                {% if filieres %}
+                    {% for filiere in filieres %}
+                    <option value="{{ filiere.id }}" {% if filiere_selectionnee and filiere.id == filiere_selectionnee.id %}selected{% endif %}>
+                        {{ filiere.nom_filiere }} - {{ filiere.niveau }}
+                    </option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+        
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Cours</label>
+            <select name="cours_id" onchange="this.form.submit()" 
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                <option value="">-- Tous les cours --</option>
+                {% if cours_liste %}
+                    {% for cours in cours_liste %}
+                    <option value="{{ cours.id }}" {% if cours_selectionne and cours.id == cours_selectionne.id %}selected{% endif %}>
+                        {{ cours.nom_cours }} ({{ cours.type_cours }}) - {{ cours.nom_filiere }} {{ cours.niveau }}
+                    </option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+        </div>
+    </form>
+</div>
+
+{% if cours_selectionne %}
+<!-- Statistiques -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-blue-50 rounded-lg p-4">
+        <div class="text-sm text-gray-600">Moyenne Générale</div>
+        <div class="text-2xl font-bold text-blue-600">
+            {{ statistiques.moyenne if statistiques and statistiques.moyenne else 'N/A' }}/20
+        </div>
+    </div>
+    <div class="bg-green-50 rounded-lg p-4">
+        <div class="text-sm text-gray-600">Note Max</div>
+        <div class="text-2xl font-bold text-green-600">
+            {{ statistiques.note_max if statistiques and statistiques.note_max else 'N/A' }}/20
+        </div>
+    </div>
+    <div class="bg-red-50 rounded-lg p-4">
+        <div class="text-sm text-gray-600">Note Min</div>
+        <div class="text-2xl font-bold text-red-600">
+            {{ statistiques.note_min if statistiques and statistiques.note_min else 'N/A' }}/20
+        </div>
+    </div>
+    <div class="bg-purple-50 rounded-lg p-4">
+        <div class="text-sm text-gray-600">Nombre d'Étudiants</div>
+        <div class="text-2xl font-bold text-purple-600">
+            {{ statistiques.nb_etudiants if statistiques and statistiques.nb_etudiants else 0 }}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Tableau des notes -->
+{% if notes %}
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Matricule</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Étudiant</th>
+                    {% if not cours_selectionne %}
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cours</th>
+                    {% endif %}
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Note/20</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Coef</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saisi par</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for note in notes %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {{ note.matricule }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ note.etudiant_nom }} {{ note.etudiant_prenom }}
+                    </td>
+                    {% if not cours_selectionne %}
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {{ note.nom_cours }}
+                    </td>
+                    {% endif %}
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-semibold rounded-full
+                            {% if note.type_evaluation == 'Examen' %}bg-red-100 text-red-800
+                            {% elif note.type_evaluation == 'DS' %}bg-blue-100 text-blue-800
+                            {% elif note.type_evaluation == 'TP' %}bg-green-100 text-green-800
+                            {% elif note.type_evaluation == 'Projet' %}bg-purple-100 text-purple-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ note.type_evaluation }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="text-lg font-bold
+                            {% if note.note >= 10 %}text-green-600
+                            {% else %}text-red-600{% endif %}">
+                            {{ note.note }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ note.coefficient }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ note.date_evaluation.strftime('%d/%m/%Y') if note.date_evaluation else 'N/A' }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ note.saisi_par_nom }} {{ note.saisi_par_prenom }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <button onclick="ouvrirModalModif({{ note.id }}, {{ note.note }}, {{ note.coefficient }}, '{{ note.commentaire if note.commentaire else '' }}')" 
+                                class="text-blue-600 hover:text-blue-800 mr-3">
+                            ✏️ Modifier
+                        </button>
+                        <button onclick="confirmerSuppression({{ note.id }})" 
+                                class="text-red-600 hover:text-red-800">
+                            🗑️ Supprimer
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="bg-white rounded-lg shadow-md p-12 text-center">
+    <div class="text-6xl mb-4">📚</div>
+    <h3 class="text-xl font-semibold text-gray-800 mb-2">Aucune note trouvée</h3>
+    <p class="text-gray-600">Sélectionnez une filière ou un cours pour afficher les notes</p>
+</div>
+{% endif %}
+
+<!-- Modal Modifier Note -->
+<div id="modalModif" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+    <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 shadow-lg rounded-lg bg-white">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-2xl font-bold text-gray-900">✏️ Modifier la Note</h3>
+            <button onclick="fermerModalModif()" class="text-gray-400 hover:text-gray-600 text-2xl">×</button>
+        </div>
+        
+        <form method="POST" id="formModif" class="space-y-4">
+            <input type="hidden" name="filiere_id" value="{{ filiere_selectionnee.id if filiere_selectionnee else '' }}">
+            <input type="hidden" name="cours_id" value="{{ cours_selectionne.id if cours_selectionne else '' }}">
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Note /20 *</label>
+                    <input type="number" name="note" id="modifNote" step="0.01" min="0" max="20" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Coefficient *</label>
+                    <input type="number" name="coefficient" id="modifCoef" step="0.01" min="0.01" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu">
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Commentaire</label>
+                <textarea name="commentaire" id="modifCommentaire" rows="3" 
+                          class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-uist-bleu"></textarea>
+            </div>
+            
+            <div class="flex justify-end space-x-3 pt-4">
+                <button type="button" onclick="fermerModalModif()" 
+                        class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition">
+                    Annuler
+                </button>
+                <button type="submit" class="px-6 py-2 bg-uist-bleu hover:bg-blue-600 text-white rounded-lg transition">
+                    Enregistrer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Form caché pour suppression -->
+<form id="formSuppression" method="POST" style="display: none;">
+    <input type="hidden" name="filiere_id" value="{{ filiere_selectionnee.id if filiere_selectionnee else '' }}">
+    <input type="hidden" name="cours_id" value="{{ cours_selectionne.id if cours_selectionne else '' }}">
+</form>
+
+<script>
+function ouvrirModalModif(noteId, note, coef, commentaire) {
+    document.getElementById('modifNote').value = note;
+    document.getElementById('modifCoef').value = coef;
+    document.getElementById('modifCommentaire').value = commentaire;
+    document.getElementById('formModif').action = `/admin/notes/modifier/${noteId}`;
+    document.getElementById('modalModif').classList.remove('hidden');
+}
+
+function fermerModalModif() {
+    document.getElementById('modalModif').classList.add('hidden');
+}
+
+function confirmerSuppression(noteId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cette note ?')) {
+        const form = document.getElementById('formSuppression');
+        form.action = `/admin/notes/supprimer/${noteId}`;
+        form.submit();
+    }
+}
+</script>
+
+{% endblock %}

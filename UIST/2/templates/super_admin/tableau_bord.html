@@ -1,0 +1,224 @@
+{% extends "base_moderne.html" %}
+
+{% block titre %}Tableau de Bord - Super Admin{% endblock %}
+
+{% block contenu %}
+<div class="container-fluid">
+    {# En-tête de la page #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h2 mb-3">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Tableau de Bord - Super Administrateur
+            </h1>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item active">Tableau de bord</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    {# Section Statistiques avec Lazy Loading #}
+    <div id="section-statistiques" class="lazy-load mb-4" data-lazy-url="{{ url_for('super_admin.api_statistiques_rapides') }}">
+        {# Skeleton pendant le chargement #}
+        {% include 'composants/skeleton_chargement.html' with context %}
+        {% set type = 'stat' %}
+        {% set nombre = 4 %}
+        
+        {# Contenu réel (caché pendant le chargement) #}
+        <div class="contenu-reel" style="display: none;">
+            <div class="row">
+                {# Carte: Total Utilisateurs #}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="carte-moderne p-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-users fa-3x text-primary"></i>
+                        </div>
+                        <h3 class="h2 mb-1">
+                            {{ stats.get('SUPER_ADMIN', {}).get('total', 0) + 
+                               stats.get('DIRECTEUR', {}).get('total', 0) +
+                               stats.get('GESTION_1', {}).get('total', 0) +
+                               stats.get('GESTION_2', {}).get('total', 0) +
+                               stats.get('GESTION_3', {}).get('total', 0) +
+                               stats.get('ENSEIGNANT', {}).get('total', 0) +
+                               stats.get('ETUDIANT', {}).get('total', 0) +
+                               stats.get('PARENT', {}).get('total', 0) }}
+                        </h3>
+                        <p class="text-muted mb-0">Total Utilisateurs</p>
+                    </div>
+                </div>
+
+                {# Carte: Étudiants #}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="carte-moderne p-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-user-graduate fa-3x text-success"></i>
+                        </div>
+                        <h3 class="h2 mb-1">
+                            {{ stats.get('ETUDIANT', {}).get('total', 0) }}
+                        </h3>
+                        <p class="text-muted mb-0">Étudiants</p>
+                        <small class="text-success">
+                            {{ stats.get('ETUDIANT', {}).get('actifs', 0) }} actifs
+                        </small>
+                    </div>
+                </div>
+
+                {# Carte: Enseignants #}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="carte-moderne p-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-chalkboard-teacher fa-3x text-info"></i>
+                        </div>
+                        <h3 class="h2 mb-1">
+                            {{ stats.get('ENSEIGNANT', {}).get('total', 0) }}
+                        </h3>
+                        <p class="text-muted mb-0">Enseignants</p>
+                        <small class="text-info">
+                            {{ stats.get('ENSEIGNANT', {}).get('actifs', 0) }} actifs
+                        </small>
+                    </div>
+                </div>
+
+                {# Carte: Administrateurs #}
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="carte-moderne p-4 text-center">
+                        <div class="mb-3">
+                            <i class="fas fa-user-shield fa-3x text-warning"></i>
+                        </div>
+                        <h3 class="h2 mb-1">
+                            {{ stats.get('SUPER_ADMIN', {}).get('total', 0) +
+                               stats.get('DIRECTEUR', {}).get('total', 0) +
+                               stats.get('GESTION_1', {}).get('total', 0) +
+                               stats.get('GESTION_2', {}).get('total', 0) +
+                               stats.get('GESTION_3', {}).get('total', 0) }}
+                        </h3>
+                        <p class="text-muted mb-0">Administrateurs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Actions Rapides #}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="carte-moderne p-4">
+                <h4 class="mb-3">
+                    <i class="fas fa-bolt me-2"></i>
+                    Actions Rapides
+                </h4>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('super_admin.creer_utilisateur') }}" 
+                           class="btn btn-primary btn-personnalise w-100">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Créer Utilisateur
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('super_admin.liste_utilisateurs') }}" 
+                           class="btn btn-info btn-personnalise w-100">
+                            <i class="fas fa-users me-2"></i>
+                            Gérer Utilisateurs
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('super_admin.journal_audit') }}" 
+                           class="btn btn-warning btn-personnalise w-100">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Journal Audit
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('super_admin.configuration_systeme') }}" 
+                           class="btn btn-secondary btn-personnalise w-100">
+                            <i class="fas fa-cog me-2"></i>
+                            Configuration
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Répartition par Rôle #}
+    <div class="row">
+        <div class="col-12">
+            <div class="carte-moderne p-4">
+                <h4 class="mb-4">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Répartition des Utilisateurs par Rôle
+                </h4>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Rôle</th>
+                                <th class="text-center">Total</th>
+                                <th class="text-center">Actifs</th>
+                                <th class="text-center">Inactifs</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for role, data in stats.items() %}
+                            <tr>
+                                <td>
+                                    <i class="fas fa-circle text-primary me-2" style="font-size: 8px;"></i>
+                                    <strong>{{ role }}</strong>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-secondary">{{ data.total }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-success">{{ data.actifs }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">{{ data.inactifs }}</span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="{{ url_for('super_admin.liste_utilisateurs', role=role) }}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye me-1"></i>
+                                        Voir
+                                    </a>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">
+                                    Aucune donnée disponible
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts_supplementaires %}
+<script>
+    // Charger immédiatement la section statistiques
+    document.addEventListener('DOMContentLoaded', function() {
+        // Les statistiques sont déjà chargées côté serveur
+        // On affiche simplement le contenu sans lazy loading pour cette page
+        const section = document.getElementById('section-statistiques');
+        if (section) {
+            const skeleton = section.querySelector('.skeleton-chargement');
+            const contenu = section.querySelector('.contenu-reel');
+            
+            if (skeleton) skeleton.style.display = 'none';
+            if (contenu) {
+                contenu.style.display = 'block';
+                setTimeout(() => contenu.classList.add('contenu-visible'), 50);
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,289 @@
+ <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titre %}UIST-2ITS{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/logo2.png') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'uist-bleu': '#00A3E0',
+                        'uist-jaune': '#D2F700',
+                        'uist-orange': '#FF6B35',
+                        'uist-vert': '#4CAF50',
+                        'uist-violet': '#9C27B0',
+                        'uist-rouge': '#DC2626',
+                    },
+                    fontFamily: {
+                        'uist': ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Animations et transitions */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Amélioration des messages flash */
+        .flash-message {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* Skeleton loading */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-uist">
+    <!-- En-tête -->
+    <header class="bg-white border-b border-gray-200 shadow-sm">
+        <div class="container mx-auto px-4 py-4 lg:py-5">
+            <div class="flex items-center justify-between">
+                <!-- Logo et nom -->
+                <div class="flex items-center space-x-3 lg:space-x-4">
+                    {% if session.utilisateur_id %}
+                        {% if session.role == 'SUPER_ADMIN' %}
+                            <a href="{{ url_for('super_admin.tableau_de_bord') }}" class="flex items-center space-x-3">
+                        {% elif session.role == 'DIRECTEUR' %}
+                            <a href="{{ url_for('directeur.tableau_de_bord') }}" class="flex items-center space-x-3">
+                        {% elif session.role == 'GESTION_1' %}
+                            <a href="{{ url_for('gestion1.tableau_de_bord') }}" class="flex items-center space-x-3">
+                        {% elif session.role == 'GESTION_2' %}
+                            <a href="{{ url_for('gestion2.tableau_de_bord') }}" class="flex items-center space-x-3">
+                        {% elif session.role == 'GESTION_3' %}
+                            <a href="{{ url_for('gestion3.tableau_de_bord') }}" class="flex items-center space-x-3">
+                        {% elif session.role == 'ENSEIGNANT' %}
+                            <a href="{{ url_for('enseignant.tableau_bord') }}" class="flex items-center space-x-3">
+                        {% elif session.role == 'ETUDIANT' %}
+                            <a href="{{ url_for('etudiant.tableau_bord') }}" class="flex items-center space-x-3">
+                        {% elif session.role == 'PARENT' %}
+                            <a href="{{ url_for('parent.tableau_bord') }}" class="flex items-center space-x-3">
+                        {% else %}
+                            <a href="{{ url_for('auth.connexion') }}" class="flex items-center space-x-3">
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('auth.landing') }}" class="flex items-center space-x-3">
+                    {% endif %}
+                        <img src="{{ url_for('static', filename='images/logo2.png') }}" alt="UIST-2ITS" class="h-10 lg:h-12 w-auto" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div class="hidden flex-col">
+                            <span class="text-xl lg:text-2xl font-bold text-uist-bleu">UIST</span>
+                            <span class="text-sm lg:text-base font-semibold text-uist-rouge">2ITS</span>
+                        </div>
+                    </a>
+                    {% if session.utilisateur_id %}
+                    <div class="hidden md:flex items-center space-x-2 text-sm text-gray-600">
+                        <span class="font-medium">{{ session.prenom }} {{ session.nom }}</span>
+                        <span class="text-gray-400">•</span>
+                        <span class="text-xs bg-gray-100 px-2 py-1 rounded">{{ session.role }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if session.utilisateur_id %}
+                <!-- Menu burger pour mobile -->
+                <button id="menuToggle" class="lg:hidden text-gray-700 focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+                
+                <!-- Navigation desktop -->
+                <nav class="hidden lg:flex items-center space-x-1 xl:space-x-2">
+                    {% if session.role == 'SUPER_ADMIN' %}
+                    <a href="{{ url_for('super_admin.tableau_de_bord') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('super_admin.liste_utilisateurs') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Utilisateurs</a>
+                    <a href="{{ url_for('super_admin.configuration') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Configuration</a>
+                    <a href="{{ url_for('super_admin.audit') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Audit</a>
+
+                    {% elif session.role == 'DIRECTEUR' %}
+                    <a href="{{ url_for('directeur.tableau_de_bord') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('directeur.validation_notes') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Validation Notes</a>
+                    <a href="{{ url_for('directeur.gestion_utilisateurs') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Utilisateurs</a>
+                    <a href="{{ url_for('directeur.conflits_edt') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Conflits</a>
+
+                    {% elif session.role == 'GESTION_1' %}
+                    <a href="{{ url_for('gestion1.tableau_de_bord') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('gestion1.salles') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Salles</a>
+                    <a href="{{ url_for('gestion1.filieres') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Filières</a>
+                    <a href="{{ url_for('gestion1.cours') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Cours</a>
+
+                    {% elif session.role == 'GESTION_2' %}
+                    <a href="{{ url_for('gestion2.tableau_de_bord') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('gestion2.etudiants') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Étudiants</a>
+                    <a href="{{ url_for('gestion2.notes_saisie') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Saisie Notes</a>
+
+                    {% elif session.role == 'GESTION_3' %}
+                    <a href="{{ url_for('gestion3.tableau_de_bord') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('gestion3.presences') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Présences</a>
+
+                    {% elif session.role == 'GESTIONNAIRE_PV' %}
+                    <a href="{{ url_for('admin.gestionnaire_pv_dashboard') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('admin.generer_bulletin_page') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Bulletins</a>
+
+                    {% elif session.role == 'GESTIONNAIRE_EXAMENS' %}
+                    <a href="{{ url_for('admin.gestionnaire_examens_dashboard') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('admin.gestion_examens') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Examens</a>
+                    <a href="{{ url_for('admin.import_notes_page') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Import Notes</a>
+
+                    {% elif session.role == 'GESTIONNAIRE_EDT' %}
+                    <a href="{{ url_for('edt.gestionnaire_edt_dashboard') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('edt.emplois_du_temps_filieres') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Emploi du temps</a>
+                    <a href="{{ url_for('admin.gestion_creneaux') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Créneaux</a>
+
+                    {% elif session.role == 'GESTIONNAIRE_PRESENCES' %}
+                    <a href="{{ url_for('admin.gestion_presences') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+
+                    {% elif session.role == 'ENSEIGNANT' %}
+                    <a href="{{ url_for('enseignant.tableau_bord') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('enseignant.notes') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Mes Notes</a>
+                    <a href="{{ url_for('edt.consultation_edt') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Mon EDT</a>
+
+                    {% elif session.role == 'ETUDIANT' %}
+                    <a href="{{ url_for('etudiant.tableau_bord') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('etudiant.notes') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Mes Notes</a>
+                    <a href="{{ url_for('edt.consultation_edt') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Mon EDT</a>
+
+                    {% elif session.role == 'PARENT' %}
+                    <a href="{{ url_for('parent.tableau_bord') }}" class="px-3 py-2 text-sm font-medium text-gray-700 hover:text-uist-bleu hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    {% endif %}
+
+                    <a href="{{ url_for('auth.deconnexion') }}" class="ml-2 px-4 py-2 text-sm font-medium text-white bg-uist-rouge hover:bg-red-700 rounded-lg transition">Déconnexion</a>
+                </nav>
+                {% endif %}
+            </div>
+            
+            <!-- Menu mobile -->
+            {% if session.utilisateur_id %}
+            <nav id="mobileMenu" class="hidden lg:hidden mt-4 pb-2 space-y-1 border-t border-gray-200 pt-4">
+                    {% if session.role == 'SUPER_ADMIN' %}
+                    <a href="{{ url_for('super_admin.tableau_de_bord') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                    <a href="{{ url_for('super_admin.liste_utilisateurs') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Utilisateurs</a>
+                    <a href="{{ url_for('super_admin.configuration') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Configuration</a>
+                    <a href="{{ url_for('super_admin.audit') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Audit</a>
+
+                {% elif session.role == 'DIRECTEUR' %}
+                <a href="{{ url_for('directeur.tableau_de_bord') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                <a href="{{ url_for('directeur.validation_notes') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Validation Notes</a>
+
+                {% elif session.role == 'GESTIONNAIRE_PV' %}
+                <a href="{{ url_for('admin.gestionnaire_pv_dashboard') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                <a href="{{ url_for('admin.generer_bulletin_page') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Bulletins</a>
+
+                {% elif session.role == 'GESTIONNAIRE_EXAMENS' %}
+                <a href="{{ url_for('admin.gestionnaire_examens_dashboard') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                <a href="{{ url_for('admin.gestion_examens') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Examens</a>
+                <a href="{{ url_for('admin.import_notes_page') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Import Notes</a>
+
+                {% elif session.role == 'GESTIONNAIRE_EDT' %}
+                <a href="{{ url_for('edt.gestionnaire_edt_dashboard') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                <a href="{{ url_for('edt.emplois_du_temps_filieres') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Emploi du temps</a>
+                <a href="{{ url_for('admin.gestion_creneaux') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Créneaux</a>
+
+                {% elif session.role == 'GESTIONNAIRE_PRESENCES' %}
+                <a href="{{ url_for('admin.gestion_presences') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+
+                {% elif session.role == 'ENSEIGNANT' %}
+                <a href="{{ url_for('enseignant.tableau_bord') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                <a href="{{ url_for('enseignant.gestion_notes') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Mes Notes</a>
+                <a href="{{ url_for('edt.mon_emploi_du_temps') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Mon EDT</a>
+
+                {% elif session.role == 'ETUDIANT' %}
+                <a href="{{ url_for('etudiant.tableau_bord') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                <a href="{{ url_for('etudiant.mes_notes') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Mes Notes</a>
+                <a href="{{ url_for('edt.mon_emploi_du_temps') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Mon EDT</a>
+
+                {% elif session.role == 'PARENT' %}
+                <a href="{{ url_for('parent.tableau_bord') }}" class="block px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg transition">Tableau de bord</a>
+                {% endif %}
+
+                <div class="pt-2 mt-2 border-t border-gray-200">
+                    <a href="{{ url_for('auth.deconnexion') }}" class="block px-3 py-2 text-sm font-medium text-white bg-uist-rouge hover:bg-red-700 rounded-lg transition text-center">Déconnexion</a>
+                </div>
+            </nav>
+            {% endif %}
+        </div>
+    </header>
+
+    <!-- Messages Flash -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="container mx-auto px-4 mt-6">
+            {% for category, message in messages %}
+            <div class="flash-message p-4 rounded-lg mb-3 shadow-sm border-l-4 {% if category == 'success' %}bg-green-50 text-green-800 border-green-500{% elif category == 'danger' %}bg-red-50 text-red-800 border-red-500{% elif category == 'warning' %}bg-yellow-50 text-yellow-800 border-yellow-500{% else %}bg-blue-50 text-blue-800 border-blue-500{% endif %}">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            {% if category == 'success' %}
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                            {% elif category == 'danger' %}
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                            {% elif category == 'warning' %}
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            {% else %}
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            {% endif %}
+                        </svg>
+                        <span class="font-medium">{{ message }}</span>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.style.display='none'" class="text-gray-400 hover:text-gray-600 ml-4">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Contenu Principal -->
+    <main class="container mx-auto px-4 py-6 lg:py-10">
+        {% block contenu %}{% endblock %}
+    </main>
+
+    <!-- Script pour le menu mobile -->
+    <script>
+        const menuToggle = document.getElementById('menuToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (menuToggle && mobileMenu) {
+            menuToggle.addEventListener('click', function() {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    </script>
+</body>
+</html>

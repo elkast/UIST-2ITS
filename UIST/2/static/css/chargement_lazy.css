@@ -1,0 +1,248 @@
+/**
+ * Styles pour le système de Lazy Loading
+ * UIST-2ITS - Chargement progressif du contenu
+ */
+
+/* Conteneur de chargement lazy */
+.lazy-load {
+    min-height: 100px;
+    position: relative;
+}
+
+/* Skeleton de chargement */
+.skeleton-chargement {
+    display: block;
+    animation: pulse-skeleton 1.5s ease-in-out infinite;
+}
+
+.skeleton-chargement.masque {
+    display: none;
+}
+
+/* Animation de pulsation pour le skeleton */
+@keyframes pulse-skeleton {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+/* Éléments skeleton */
+.skeleton-item {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #e0e0e0 20%,
+        #f0f0f0 40%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+/* Skeleton pour cartes */
+.skeleton-carte {
+    height: 200px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #e0e0e0 20%,
+        #f0f0f0 40%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+/* Skeleton pour tableaux */
+.skeleton-ligne-tableau {
+    height: 50px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #e0e0e0 20%,
+        #f0f0f0 40%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+/* Skeleton pour texte */
+.skeleton-texte {
+    height: 16px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #e0e0e0 20%,
+        #f0f0f0 40%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 8px;
+}
+
+.skeleton-texte.court {
+    width: 60%;
+}
+
+.skeleton-texte.moyen {
+    width: 80%;
+}
+
+.skeleton-texte.long {
+    width: 100%;
+}
+
+/* Skeleton pour titres */
+.skeleton-titre {
+    height: 28px;
+    width: 40%;
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #e0e0e0 20%,
+        #f0f0f0 40%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+    margin-bottom: 16px;
+}
+
+/* Skeleton pour statistiques */
+.skeleton-stat {
+    height: 120px;
+    width: 100%;
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #e0e0e0 20%,
+        #f0f0f0 40%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+    margin-bottom: 16px;
+}
+
+/* Contenu réel */
+.contenu-reel {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.contenu-reel.contenu-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Spinner de chargement */
+.spinner-chargement {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Centrage du spinner */
+.conteneur-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+/* Message de chargement */
+.message-chargement {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* Grille de skeleton pour les cartes */
+.grille-skeleton {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .grille-skeleton {
+        grid-template-columns: 1fr;
+    }
+    
+    .skeleton-titre {
+        width: 60%;
+    }
+}
+
+/* États de chargement pour différents composants */
+.carte-chargement {
+    position: relative;
+    overflow: hidden;
+}
+
+.carte-chargement::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.5),
+        transparent
+    );
+    animation: slide 1.5s infinite;
+}
+
+@keyframes slide {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 100%;
+    }
+}

@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block titre %}Notes de {{ enfant.etudiant_prenom }} {{ enfant.etudiant_nom }} - UIST-2ITS{% endblock %}
+{% block contenu %}
+<div class="mb-6">
+    <a href="{{ url_for('parent.tableau_bord') }}" class="text-uist-bleu hover:underline flex items-center mb-4">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Retour au tableau de bord
+    </a>
+    <h2 class="text-2xl lg:text-3xl font-bold text-gray-800">Notes de {{ enfant.etudiant_prenom }} {{ enfant.etudiant_nom }}</h2>
+    <p class="text-sm text-gray-600 mt-2">{{ enfant.nom_filiere }} - {{ enfant.niveau }}</p>
+</div>
+
+<!-- Moyenne générale -->
+<div class="bg-gradient-to-r from-uist-bleu to-blue-600 text-white rounded-lg p-6 mb-6 shadow-md">
+    <div class="flex items-center justify-between">
+        <div>
+            <h3 class="text-lg font-semibold opacity-90">Moyenne Générale</h3>
+            <p class="text-sm opacity-75">Sur {{ moyenne_generale.nb_notes if moyenne_generale else 0 }} notes</p>
+        </div>
+        <div class="text-5xl font-bold">
+            {% if moyenne_generale and moyenne_generale.moyenne %}
+            {{ moyenne_generale.moyenne }}
+            {% else %}
+            --
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Notes par cours -->
+{% if notes_par_cours %}
+<div class="space-y-6">
+    {% for cours_nom, data in notes_par_cours.items() %}
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-gray-100 px-6 py-4 border-b border-gray-200">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-gray-800">{{ cours_nom }}</h3>
+                <div class="text-right">
+                    <div class="text-sm text-gray-600">Moyenne du cours</div>
+                    <div class="text-2xl font-bold text-uist-bleu">
+                        {% if moyennes_cours[cours_nom] and moyennes_cours[cours_nom].moyenne %}
+                        {{ moyennes_cours[cours_nom].moyenne }}
+                        {% else %}
+                        --
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="p-6">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Type</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Date</th>
+                            <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">Note</th>
+                            <th class="text-center py-3 px-4 text-sm font-semibold text-gray-700">Coefficient</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-700">Commentaire</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in data.notes %}
+                        <tr class="border-b border-gray-100 hover:bg-gray-50">
+                            <td class="py-3 px-4">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                    {% if note.type_evaluation == 'Examen' %}bg-red-100 text-red-800
+                                    {% elif note.type_evaluation == 'DS' %}bg-orange-100 text-orange-800
+                                    {% elif note.type_evaluation == 'TP' %}bg-blue-100 text-blue-800
+                                    {% elif note.type_evaluation == 'Projet' %}bg-purple-100 text-purple-800
+                                    {% else %}bg-green-100 text-green-800{% endif %}">
+                                    {{ note.type_evaluation }}
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-sm text-gray-600">{{ note.date_evaluation }}</td>
+                            <td class="py-3 px-4 text-center">
+                                <span class="text-lg font-bold {% if note.note >= 10 %}text-green-600{% else %}text-red-600{% endif %}">
+                                    {{ note.note }}/20
+                                </span>
+                            </td>
+                            <td class="py-3 px-4 text-center text-sm text-gray-600">{{ note.coefficient }}</td>
+                            <td class="py-3 px-4 text-sm text-gray-600">{{ note.commentaire if note.commentaire else '-' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+    <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+    </svg>
+    <p class="text-gray-500">Aucune note disponible pour le moment</p>
+</div>
+{% endif %}
+{% endblock %}

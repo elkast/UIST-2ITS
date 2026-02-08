@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block titre %}Suivi de mes Enfants - Parent{% endblock %}
+
+{% block contenu %}
+<div class="container mx-auto px-4 py-6">
+    <!-- En-tête -->
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">
+            <i class="fas fa-users mr-2 text-pink-600"></i>
+            Suivi de mes Enfants
+        </h1>
+        <p class="text-gray-600 mt-1">Bonjour {{ session.prenom }} {{ session.nom }}</p>
+    </div>
+
+    <!-- Vue d'ensemble -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Enfants Suivis</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ enfants|length }}</p>
+                </div>
+                <i class="fas fa-child text-4xl text-blue-200"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Moyenne Globale</p>
+                    <p class="text-3xl font-bold text-green-600">{{ moyenne_globale|default('N/A') }}</p>
+                </div>
+                <i class="fas fa-chart-line text-4xl text-green-200"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Alertes Actives</p>
+                    <p class="text-3xl font-bold text-red-600">{{ nb_alertes|default(0) }}</p>
+                </div>
+                <i class="fas fa-exclamation-triangle text-4xl text-red-200"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alertes Globales -->
+    {% if alertes %}
+    <div class="mb-6 space-y-3">
+        {% for alerte in alertes %}
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm">
+            <div class="flex items-start">
+                <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3 mt-1"></i>
+                <div>
+                    <p class="font-bold text-red-800">{{ alerte.titre }}</p>
+                    <p class="text-sm text-red-700 mt-1">{{ alerte.message }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Cartes Enfants -->
+    <div class="space-y-6">
+        {% if enfants %}
+        {% for enfant in enfants %}
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <!-- En-tête Enfant -->
+            <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="w-16 h-16 rounded-full bg-white bg-opacity-20 flex items-center justify-center mr-4">
+                            <i class="fas fa-user-graduate text-3xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold">{{ enfant.prenom }} {{ enfant.nom }}</h2>
+                            <p class="text-blue-100">{{ enfant.matricule }}</p>
+                            <p class="text-sm text-blue-100">{{ enfant.nom_filiere }} - {{ enfant.niveau }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm text-blue-100">Moyenne Générale</p>
+                        <p class="text-4xl font-bold">{{ enfant.moyenne|default('N/A') }}</p>
+                        {% if enfant.evolution %}
+                        <p class="text-sm {% if enfant.evolution > 0 %}text-green-300{% else %}text-red-300{% endif %}">
+                            {% if enfant.evolution > 0 %}
+                            <i class="fas fa-arrow-up"></i> +{{ enfant.evolution }}
+                            {% else %}
+                            <i class="fas fa-arrow-down"></i> {{ enfant.evolution }}
+                            {% endif %}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistiques Enfant -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 p-6 bg-gray-50">
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Rang</p>
+                    <p class="text-2xl font-bold text-blue-600">{{ enfant.rang|default('-') }}/{{ enfant.total_etudiants|default('-') }}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Notes Validées</p>
+                    <p class="text-2xl font-bold text-green-600">{{ enfant.nb_notes_validees|default(0) }}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">En Attente</p>
+                    <p class="text-2xl font-bold text-orange-600">{{ enfant.nb_notes_en_attente|default(0) }}</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-gray-600 text-sm">Bulletins</p>
+                    <p class="text-2xl font-bold text-purple-600">{{ enfant.nb_bulletins|default(0) }}</p>
+                </div>
+            </div>
+
+            <!-- Détails Enfant -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
+                <!-- Notes Récentes -->
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-clipboard-list mr-2 text-blue-600"></i>
+                        Notes Récentes
+                    </h3>
+                    {% if enfant.notes_recentes %}
+                    <div class="space-y-2">
+                        {% for note in enfant.notes_recentes[:5] %}
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                            <div class="flex-1">
+                                <p class="font-semibold text-sm text-gray-800">{{ note.nom_cours }}</p>
+                                <p class="text-xs text-gray-500">{{ note.type_evaluation }}</p>
+                            </div>
+                            <p class="text-xl font-bold {% if note.note >= 10 %}text-green-600{% else %}text-red-600{% endif %}">
+                                {{ note.note }}/20
+                            </p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 text-sm text-center py-4">Aucune note disponible</p>
+                    {% endif %}
+                </div>
+
+                <!-- Évolution & Bulletins -->
+                <div>
+                    <h3 class="font-bold text-gray-800 mb-3 flex items-center">
+                        <i class="fas fa-chart-area mr-2 text-green-600"></i>
+                        Évolution & Bulletins
+                    </h3>
+                    
+                    {% if enfant.evolution_mensuelle %}
+                    <div class="mb-4">
+                        <p class="text-sm text-gray-600 mb-2">Évolution sur 3 mois</p>
+                        <div class="flex items-end justify-between h-32 bg-gray-50 rounded p-3">
+                            {% for mois in enfant.evolution_mensuelle %}
+                            <div class="flex-1 mx-1">
+                                <div class="bg-blue-500 rounded-t" style="height: {{ (mois.moyenne / 20 * 100) }}%"></div>
+                                <p class="text-xs text-center mt-1">{{ mois.label }}</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if enfant.bulletins %}
+                    <div class="space-y-2">
+                        {% for bulletin in enfant.bulletins[:3] %}
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded">
+                            <div>
+                                <p class="font-semibold text-sm">{{ bulletin.semestre }} {{ bulletin.annee_academique }}</p>
+                                <p class="text-xs text-gray-600">Moyenne: {{ bulletin.moyenne_generale }}/20</p>
+                            </div>
+                            <a href="/parent/enfant/{{ enfant.id }}/bulletin/{{ bulletin.id }}" 
+                               class="text-blue-600 hover:text-blue-800">
+                                <i class="fas fa-download"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="text-gray-500 text-sm text-center py-4">Aucun bulletin disponible</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="p-4 bg-gray-50 border-t flex gap-3">
+                <a href="/parent/enfant/{{ enfant.id }}/notes" class="flex-1 bg-blue-600 text-white text-center px-4 py-2 rounded hover:bg-blue-700">
+                    <i class="fas fa-list mr-1"></i>
+                    Voir toutes les notes
+                </a>
+                <a href="/parent/enfant/{{ enfant.id }}/emploi-du-temps" class="flex-1 bg-green-600 text-white text-center px-4 py-2 rounded hover:bg-green-700">
+                    <i class="fas fa-calendar mr-1"></i>
+                    Emploi du temps
+                </a>
+                <button onclick="contactAdministration({{ enfant.id }})" class="flex-1 bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                    <i class="fas fa-envelope mr-1"></i>
+                    Contacter
+                </button>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="bg-white rounded-lg shadow p-8 text-center text-gray-500">
+            <i class="fas fa-users-slash text-6xl mb-4"></i>
+            <p class="text-xl">Aucun enfant lié à ce compte</p>
+            <p class="text-sm mt-2">Veuillez contacter l'administration pour lier vos enfants</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function contactAdministration(enfantId) {
+    alert('Fonctionnalité de contact à implémenter');
+}
+</script>
+{% endblock %}

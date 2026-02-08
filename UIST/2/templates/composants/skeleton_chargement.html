@@ -1,0 +1,70 @@
+{# 
+  Composant Skeleton de Chargement
+  Réutilisable pour afficher un état de chargement
+  
+  Paramètres:
+    - type: 'carte', 'tableau', 'texte', 'stat', 'titre'
+    - nombre: nombre d'éléments à afficher (défaut: 1)
+#}
+
+{% if type == 'carte' %}
+  <div class="skeleton-chargement">
+    {% for i in range(nombre|default(1)) %}
+      <div class="skeleton-carte mb-3"></div>
+    {% endfor %}
+  </div>
+
+{% elif type == 'tableau' %}
+  <div class="skeleton-chargement">
+    <div class="skeleton-titre mb-4"></div>
+    {% for i in range(nombre|default(5)) %}
+      <div class="skeleton-ligne-tableau"></div>
+    {% endfor %}
+  </div>
+
+{% elif type == 'texte' %}
+  <div class="skeleton-chargement">
+    {% for i in range(nombre|default(3)) %}
+      <div class="skeleton-texte"></div>
+    {% endfor %}
+  </div>
+
+{% elif type == 'stat' %}
+  <div class="skeleton-chargement">
+    <div class="row">
+      {% for i in range(nombre|default(4)) %}
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="skeleton-stat"></div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% elif type == 'titre' %}
+  <div class="skeleton-chargement">
+    <div class="skeleton-titre"></div>
+    {% for i in range(nombre|default(2)) %}
+      <div class="skeleton-texte"></div>
+    {% endfor %}
+  </div>
+
+{% elif type == 'grille' %}
+  <div class="skeleton-chargement">
+    <div class="grille-skeleton">
+      {% for i in range(nombre|default(6)) %}
+        <div class="skeleton-carte"></div>
+      {% endfor %}
+    </div>
+  </div>
+
+{% else %}
+  {# Spinner par défaut #}
+  <div class="skeleton-chargement">
+    <div class="conteneur-spinner">
+      <div class="spinner-chargement"></div>
+    </div>
+    <div class="message-chargement">
+      Chargement en cours...
+    </div>
+  </div>
+{% endif %}

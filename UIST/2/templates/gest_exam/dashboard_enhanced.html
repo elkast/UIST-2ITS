@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block titre %}Dashboard Gestionnaire Examens - UIST-2ITS{% endblock %}
+
+{% block contenu %}
+<div class="container mx-auto px-4 py-6">
+    <!-- En-tête -->
+    <div class="flex items-center justify-between mb-6">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">
+                <i class="fas fa-file-import mr-2 text-orange-600"></i>
+                Gestionnaire d'Examens
+            </h1>
+            <p class="text-gray-600 mt-1">Import et gestion des notes d'examens</p>
+        </div>
+        <button onclick="location.href='/import-notes'" class="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 shadow-lg">
+            <i class="fas fa-upload mr-2"></i>
+            Importer Notes
+        </button>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-green-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Imports Réussis</p>
+                    <p class="text-3xl font-bold text-green-600">{{ stats.imports_succes|default(0) }}</p>
+                </div>
+                <i class="fas fa-check-circle text-4xl text-green-200"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Imports avec Erreurs</p>
+                    <p class="text-3xl font-bold text-red-600">{{ stats.imports_erreurs|default(0) }}</p>
+                </div>
+                <i class="fas fa-exclamation-triangle text-4xl text-red-200"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Cours Total</p>
+                    <p class="text-3xl font-bold text-blue-600">{{ stats.nb_cours|default(0) }}</p>
+                </div>
+                <i class="fas fa-book text-4xl text-blue-200"></i>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow border-l-4 border-purple-500">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-600 text-sm">Notes Importées</p>
+                    <p class="text-3xl font-bold text-purple-600">{{ stats.notes_total|default(0) }}</p>
+                </div>
+                <i class="fas fa-clipboard-list text-4xl text-purple-200"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historique des Imports -->
+    <div class="bg-white rounded-lg shadow mb-6">
+        <div class="p-4 border-b bg-gray-50">
+            <h2 class="text-xl font-bold text-gray-800">
+                <i class="fas fa-history mr-2 text-orange-600"></i>
+                Historique des Imports
+            </h2>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fichier</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cours</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Filière</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Succès</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Erreurs</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% if imports %}
+                    {% for import in imports %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ import.created_at.strftime('%d/%m/%Y %H:%M') }}
+                        </td>
+                        <td class="px-6 py-4">
+                            <div class="text-sm font-medium text-gray-900">{{ import.fichier_nom }}</div>
+                            <div class="text-xs text-gray-500">Par: {{ import.importeur_prenom }} {{ import.importeur_nom }}</div>
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ import.nom_cours }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-900">
+                            {{ import.nom_filiere }} - {{ import.niveau }}
+                        </td>
+                        <td class="px-6 py-4 text-sm text-gray-900">{{ import.lignes_totales }}</td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm font-semibold text-green-600">{{ import.lignes_succes }}</span>
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if import.lignes_erreurs > 0 %}
+                            <span class="text-sm font-semibold text-red-600">{{ import.lignes_erreurs }}</span>
+                            {% else %}
+                            <span class="text-sm text-gray-400">0</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            {% if import.statut == 'TERMINE' and import.lignes_erreurs == 0 %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-check-circle"></i> Succès
+                            </span>
+                            {% elif import.statut == 'TERMINE' %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                <i class="fas fa-exclamation-triangle"></i> Partiel
+                            </span>
+                            {% else %}
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+                                <i class="fas fa-times-circle"></i> Erreur
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-sm">
+                            {% if import.details_erreurs %}
+                            <button onclick="showImportErrors({{ import.id }})" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-eye"></i> Voir erreurs
+                            </button>
+                            {% else %}
+                            <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="9" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-2"></i><br>
+                            Aucun import effectué
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Statistiques par Cours -->
+    <div class="bg-white rounded-lg shadow">
+        <div class="p-4 border-b bg-gray-50">
+            <h2 class="text-xl font-bold text-gray-800">
+                <i class="fas fa-chart-bar mr-2 text-blue-600"></i>
+                Statistiques par Cours
+            </h2>
+        </div>
+        <div class="p-4">
+            {% if cours %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {% for c in cours %}
+                <div class="border rounded-lg p-4 hover:shadow-md transition">
+                    <h3 class="font-bold text-gray-800 mb-2">{{ c.nom_cours }}</h3>
+                    <p class="text-sm text-gray-600 mb-3">{{ c.nom_filiere }} - {{ c.niveau }}</p>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Notes importées:</span>
+                            <span class="font-semibold">{{ c.nb_notes|default(0) }}</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Dernière import:</span>
+                            <span class="font-semibold text-blue-600">
+                                {% if c.dernier_import %}
+                                {{ c.dernier_import }}
+                                {% else %}
+                                Jamais
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="/import-notes?cours_id={{ c.id }}" class="block text-center bg-orange-600 text-white text-sm px-3 py-2 rounded hover:bg-orange-700">
+                            <i class="fas fa-upload mr-1"></i>
+                            Importer Notes
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p class="text-gray-500 text-center py-8">
+                <i class="fas fa-info-circle text-3xl mb-2"></i><br>
+                Aucun cours disponible
+            </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal Erreurs -->
+<div id="errors-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+    <div class="bg-white rounded-lg shadow-xl max-w-3xl w-full mx-4 max-h-[80vh] overflow-hidden">
+        <div class="p-4 border-b bg-gray-50 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-800">
+                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                Détails des Erreurs d'Import
+            </h3>
+            <button onclick="closeErrorsModal()" class="text-gray-500 hover:text-gray-700">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        <div id="errors-content" class="p-4 overflow-y-auto max-h-[60vh]">
+            <!-- Contenu chargé dynamiquement -->
+        </div>
+    </div>
+</div>
+
+<script>
+function showImportErrors(importId) {
+    // Simulation affichage erreurs (à remplacer par appel API)
+    const errorsContent = `
+        <div class="space-y-3">
+            <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded">
+                <p class="font-semibold text-red-800">Ligne 12</p>
+                <p class="text-sm text-red-600">Matricule E2023999 inexistant dans la base de données</p>
+            </div>
+            <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded">
+                <p class="font-semibold text-red-800">Ligne 25</p>
+                <p class="text-sm text-red-600">Note 22/20 hors échelle (doit être entre 0 et 20)</p>
+            </div>
+            <div class="p-3 bg-red-50 border-l-4 border-red-500 rounded">
+                <p class="font-semibold text-red-800">Ligne 38</p>
+                <p class="text-sm text-red-600">Coefficient -1.5 invalide (doit être positif)</p>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('errors-content').innerHTML = errorsContent;
+    document.getElementById('errors-modal').classList.remove('hidden');
+}
+
+function closeErrorsModal() {
+    document.getElementById('errors-modal').classList.add('hidden');
+}
+</script>
+{% endblock %}

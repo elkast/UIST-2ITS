@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <title>{% block titre %}UIST-2ITS{% endblock %} - Système de Gestion Universitaire</title>
+    
+    {# Favicon #}
+    <link rel="icon" href="{{ url_for('static', filename='images/logo2.png') }}" type="image/png">
+    
+    {# Bootstrap 5 CSS #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    {# Font Awesome pour les icônes #}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    {# Styles personnalisés #}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chargement_lazy.css') }}">
+    
+    {% block styles_supplementaires %}{% endblock %}
+    
+    <style>
+        /* Styles de base */
+        :root {
+            --couleur-primaire: #2c3e50;
+            --couleur-secondaire: #3498db;
+            --couleur-succes: #27ae60;
+            --couleur-danger: #e74c3c;
+            --couleur-avertissement: #f39c12;
+            --couleur-info: #16a085;
+            --couleur-fond: #ecf0f1;
+            --couleur-texte: #2c3e50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--couleur-fond);
+            color: var(--couleur-texte);
+        }
+        
+        /* Barre de navigation */
+        .navbar-personnalisee {
+            background: linear-gradient(135deg, var(--couleur-primaire) 0%, var(--couleur-secondaire) 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Contenu principal */
+        .contenu-principal {
+            min-height: calc(100vh - 120px);
+            padding: 30px 0;
+        }
+        
+        /* Cartes */
+        .carte-moderne {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 20px;
+        }
+        
+        .carte-moderne:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        /* Messages flash */
+        .alerte-personnalisee {
+            border-radius: 8px;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* Boutons */
+        .btn-personnalise {
+            border-radius: 6px;
+            padding: 10px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-personnalise:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* Pied de page */
+        .pied-page {
+            background-color: var(--couleur-primaire);
+            color: white;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+        
+        /* Animation de chargement de page */
+        .page-fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    {# Barre de navigation #}
+    {% block navigation %}
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-personnalisee">
+        <div class="container-fluid">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='images/logo2.png') }}" 
+                     alt="Logo UIST" height="40" class="me-2">
+                <span class="fw-bold">UIST-2ITS</span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" 
+                    data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    {% if session.utilisateur_id %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" 
+                               role="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle"></i>
+                                {{ session.nom }} {{ session.prenom }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="#">
+                                        <i class="fas fa-id-card me-2"></i>
+                                        {{ session.role }}
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('auth.deconnexion') }}">
+                                        <i class="fas fa-sign-out-alt me-2"></i>
+                                        Déconnexion
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url_for('auth.connexion') }}">
+                                <i class="fas fa-sign-in-alt me-1"></i>
+                                Connexion
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    {% endblock %}
+    
+    {# Messages flash #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mt-3">
+                {% for categorie, message in messages %}
+                    <div class="alert alert-{{ categorie }} alerte-personnalisee alert-dismissible fade show" 
+                         role="alert">
+                        {% if categorie == 'success' %}
+                            <i class="fas fa-check-circle me-2"></i>
+                        {% elif categorie == 'danger' %}
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                        {% elif categorie == 'warning' %}
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle me-2"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    {# Contenu principal #}
+    <main class="contenu-principal page-fade-in">
+        <div class="container-fluid">
+            {% block contenu %}{% endblock %}
+        </div>
+    </main>
+    
+    {# Pied de page #}
+    {% block pied_page %}
+    <footer class="pied-page text-center">
+        <div class="container">
+            <p class="mb-0">
+                &copy; {{ annee_courante|default(2025) }} UIST-2ITS - 
+                Système de Gestion Universitaire
+            </p>
+            <p class="small mb-0">
+                Développé avec <i class="fas fa-heart text-danger"></i> 
+                pour l'excellence académique
+            </p>
+        </div>
+    </footer>
+    {% endblock %}
+    
+    {# Scripts JavaScript #}
+    {# Bootstrap Bundle (inclut Popper) #}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {# Système de Lazy Loading #}
+    <script src="{{ url_for('static', filename='js/chargement_lazy.js') }}"></script>
+    
+    {# Scripts supplémentaires #}
+    {% block scripts_supplementaires %}{% endblock %}
+    
+    {# Script global pour améliorer l'UX #}
+    <script>
+        // Confirmation avant suppression
+        document.querySelectorAll('[data-confirmer-suppression]').forEach(element => {
+            element.addEventListener('click', function(e) {
+                if (!confirm('Êtes-vous sûr de vouloir supprimer cet élément ?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        // Auto-fermeture des alertes après 5 secondes
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                const bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

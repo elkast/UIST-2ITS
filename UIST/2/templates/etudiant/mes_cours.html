@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block titre %}Mes Cours - UIST-2ITS{% endblock %}
+
+{% block contenu %}
+<div class="max-w-6xl mx-auto mt-8">
+    <div class="bg-white rounded-lg shadow-xl p-8">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Mes Cours</h1>
+                <p class="text-gray-600 mt-2">{{ etudiant.prenom }} {{ etudiant.nom }} - {{ etudiant.nom_filiere }} {{ etudiant.niveau }}</p>
+            </div>
+            <a href="{{ url_for('edt.mon_emploi_du_temps') }}"
+               class="bg-uist-bleu hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+                📅 Voir EDT
+            </a>
+        </div>
+
+        {% if cours %}
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for cours_item in cours %}
+                <div class="bg-gray-50 rounded-lg p-6 border-l-4 border-uist-bleu">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-xl font-semibold text-gray-800">{{ cours_item.nom_cours }}</h3>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                            {% if cours_item.type_cours == 'CM' %}bg-blue-100 text-blue-800
+                            {% elif cours_item.type_cours == 'TD' %}bg-green-100 text-green-800
+                            {% else %}bg-purple-100 text-purple-800{% endif %}">
+                            {{ cours_item.type_cours }}
+                        </span>
+                    </div>
+
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center text-sm text-gray-600">
+                            <span class="font-medium mr-2">👨‍🏫 Enseignant:</span>
+                            {{ cours_item.enseignant }}
+                        </div>
+                        <div class="flex items-center text-sm text-gray-600">
+                            <span class="font-medium mr-2">🏫 Salle:</span>
+                            {{ cours_item.salle }}
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">📅 Créneaux:</h4>
+                        <div class="space-y-1">
+                            {% for creneau in cours_item.creneaux %}
+                            <div class="text-sm text-gray-600 bg-white rounded px-2 py-1">
+                                {{ creneau.jour }}: {{ creneau.heure_debut|format_time }} - {{ creneau.heure_fin|format_time }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <div class="text-6xl mb-4">📚</div>
+                <h3 class="text-xl font-semibold text-gray-800 mb-2">Aucun cours trouvé</h3>
+                <p class="text-gray-600">Il semble qu'aucun cours n'ait été planifié pour votre filière.</p>
+                <a href="{{ url_for('edt.mon_emploi_du_temps') }}"
+                   class="inline-block mt-4 bg-uist-bleu hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition">
+                    Voir l'emploi du temps
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Statistiques -->
+        {% if cours %}
+        <div class="mt-8 bg-gray-50 rounded-lg p-6">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">📊 Statistiques</h2>
+            <div class="grid md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-uist-bleu">{{ cours|length }}</div>
+                    <div class="text-sm text-gray-600">Cours au total</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-green-600">{{ cours|selectattr('type_cours', 'equalto', 'CM')|list|length }}</div>
+                    <div class="text-sm text-gray-600">Cours Magistraux</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-blue-600">{{ cours|selectattr('type_cours', 'equalto', 'TD')|list|length }}</div>
+                    <div class="text-sm text-gray-600">Travaux Dirigés</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-2xl font-bold text-purple-600">{{ cours|selectattr('type_cours', 'equalto', 'TP')|list|length }}</div>
+                    <div class="text-sm text-gray-600">Travaux Pratiques</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
